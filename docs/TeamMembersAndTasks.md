@@ -4,12 +4,12 @@
 
 The team consists of the students listed in the table below. 
 
-| Student Number	 | Name |
-|-----------------|----------------------------|
-| **1XXXXXX**     | Name of student 1          |
-| **1XXXXXX**     | Name of student 2          |
-| **1XXXXXX**     | Name of student 3          |
-| **1XXXXXX**     | Name of student 4          |
+| Student Number	 | Name          |
+|-----------------|---------------|
+| **1200858**     | Diogo Silva   |
+| **1210977**     | Nuno Teixeira |
+| **1211902**     | João Silva    |
+| **1240708**     | Rúben Silva   |
 
 
 # 2. Task Distribution ###
