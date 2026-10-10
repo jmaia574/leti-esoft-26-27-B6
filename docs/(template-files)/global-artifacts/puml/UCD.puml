@@ -1,25 +1,160 @@
+
 @startuml
-'https://plantuml.com/use-case-diagram
+title UKLabsMS - Use Case Diagram\nLETI-ESOFT 2026/2027 | Sprint 1 | Team B6
 
-title This is a Default Use Case Diagram to serve as an example
+left to right direction
 
-:Main Admin: as Admin
-(UC01 - Start) as (Start)
-(UC02 - Use the application) as (Use)
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam defaultFontName Arial
+skinparam ArrowColor #475569
+skinparam ActorBorderColor #334155
+skinparam ActorFontColor #1E293B
+skinparam UsecaseBorderColor #2563EB
+skinparam UsecaseBackgroundColor #EFF6FF
+skinparam UsecaseFontColor #1E293B
+skinparam RectangleBorderColor #64748B
+skinparam RectangleFontColor #1E293B
 
-User -> (Start)
-User --> (Use)
+' ==========================================
+' ACTORS
+' ==========================================
 
-Admin ---> (Use)
+actor "Staff Member" as Staff
+actor "Administrator" as ADM
+actor "Receptionist" as REC
+actor "Medical Lab\nTechnician" as MLT
+actor "Clinical Chemistry\nTechnologist" as CCT
+actor "Specialist Doctor" as DOC
+actor "Client" as CLT
 
-note right of Admin : This is an example.
+actor "External Barcode\nGeneration API" as BAR
+actor "Notification\nService" as NOT
 
-note right of (Use)
-A note can also
-be on several lines
+ADM --|> Staff
+REC --|> Staff
+MLT --|> Staff
+CCT --|> Staff
+DOC --|> Staff
+
+' ==========================================
+' SYSTEM BOUNDARY
+' ==========================================
+
+rectangle "UK Labs Management System (UKLabsMS)" {
+
+  package "Access Management" {
+    usecase "UC01\nAuthenticate User" as UC01
+  }
+
+  package "Core Information Management" {
+    usecase "UC02\nManage Clinical\nAnalysis Laboratories" as UC02
+    usecase "UC03\nManage Employees" as UC03
+    usecase "UC04\nManage Test Types" as UC04
+    usecase "UC05\nManage Parameters" as UC05
+  }
+
+  package "Client and Test Registration" {
+    usecase "UC06\nRegister Client" as UC06
+    usecase "UC07\nRegister Prescribed Test" as UC07
+  }
+
+  package "Sample Management" {
+    usecase "UC08\nRecord Sample Collection" as UC08
+    usecase "UC09\nGenerate Sample Barcode" as UC09
+  }
+
+  package "Chemical Analysis" {
+    usecase "UC10\nRecord Chemical\nAnalysis Results" as UC10
+  }
+
+  package "Diagnosis and Reporting" {
+    usecase "UC11\nPrepare Diagnostic Report" as UC11
+    usecase "UC12\nNotify Client of\nAvailable Results" as UC12
+  }
+
+  package "Results Consultation" {
+    usecase "UC13\nView Results and Report" as UC13
+  }
+}
+
+' ==========================================
+' ACTOR ASSOCIATIONS
+' ==========================================
+
+Staff -- UC01
+CLT -- UC01
+
+ADM -- UC02
+ADM -- UC03
+ADM -- UC04
+ADM -- UC05
+
+REC -- UC06
+REC -- UC07
+
+MLT -- UC08
+CCT -- UC10
+DOC -- UC11
+
+CLT -- UC13
+
+BAR -- UC09
+NOT -- UC12
+
+' ==========================================
+' INCLUDE RELATIONSHIPS
+' ==========================================
+
+UC08 ..> UC09 : <<include>>
+
+' ==========================================
+' REQUIREMENTS AND BUSINESS RULES
+' ==========================================
+
+note bottom of UC07
+  The receptionist records:
+  - Client
+  - Prescribed test type
+  - Parameters to measure
+  - Prescription date
+  - Sample collection date
+  - Collection laboratory
 end note
 
-note "This note is connected\nto several objects." as N2
-(Start) .. N2
-N2 .. (Use)
+note bottom of UC08
+  Each collected sample is
+  associated with a registered
+  test and identified by an
+  automatically generated barcode.
+end note
+
+note bottom of UC10
+  For each measured parameter:
+  - Result value
+  - Analysis date and time
+end note
+
+note bottom of UC11
+  The specialist doctor examines
+  the analysis results, establishes
+  a diagnosis and prepares a report.
+end note
+
+note bottom of UC12
+  After the diagnosis and report
+  are completed, the system
+  notifies the client by SMS
+  and/or email.
+end note
+
+note bottom of UC13
+  Clients may view their results
+  only after the specialist
+  doctor has prepared the report.
+end note
+
 @enduml
