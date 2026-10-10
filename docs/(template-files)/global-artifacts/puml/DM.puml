@@ -1,0 +1,111 @@
+@startuml
+hide methods
+hide circle
+skinparam classAttributeIconSize 0
+
+class Client {
+    name
+    citizenCardNumber
+    nhsNumber
+    birthDate
+    sex
+    taxIdentificationNumber
+    phoneNumber
+    email
+}
+
+class Administrator
+class Receptionist
+class MedicalLabTechnician
+class ClinicalChemistryTechnologist
+class SpecialistDoctor
+class Courier
+
+class ClinicalAnalysisLaboratory {
+    code
+    address
+    phoneNumber
+    email
+    openingHour
+    closingHour
+}
+
+class ChemicalLaboratory
+
+class LabOrder
+
+class RegisteredTest {
+    dateOfPrescription
+    sampleCollectionDate
+}
+
+class TestType {
+    internalCode
+    nhsCode
+    collectionMethodDescription
+}
+
+class Parameter {
+    code
+    name
+    description
+    metric
+}
+
+class ReferenceRange {
+    minimum
+    maximum
+}
+
+class Sample {
+    barcode
+}
+
+class ChemicalAnalysis
+
+class ParameterResult {
+    value
+    recordedAt
+}
+
+class Diagnosis
+
+class Report
+
+class Notification
+
+Client "1" -- "1..*" LabOrder : submits >
+Client "1" -- "0..*" RegisteredTest : is performed on <
+Receptionist "1" -- "0..*" RegisteredTest : registers >
+
+LabOrder "1" -- "1..*" RegisteredTest : contains >
+RegisteredTest "0..*" -- "1" TestType : is classified as >
+ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest : collects at >
+
+TestType "1..*" -- "1..*" Parameter : measures >
+Parameter "1" -- "0..1" ReferenceRange : includes >
+
+RegisteredTest "1" -- "1..*" Sample : requires >
+MedicalLabTechnician "1" -- "0..*" Sample : collects >
+Courier "1" -- "0..*" Sample : transports >
+
+Sample "1" -- "0..1" ChemicalAnalysis : is analyzed in >
+ChemicalLaboratory "1" -- "0..*" ChemicalAnalysis : hosts >
+ClinicalChemistryTechnologist "1" -- "0..*" ChemicalAnalysis : performs >
+
+ChemicalAnalysis "1" -- "1..*" ParameterResult : records >
+Parameter "1" -- "0..*" ParameterResult : measured by >
+
+RegisteredTest "1" -- "0..1" Report : results in >
+Report "1" -- "1" Diagnosis : contains >
+Report "1" -- "1..*" ParameterResult : presents >
+SpecialistDoctor "1" -- "0..*" Report : prepares >
+
+Client "1" -- "0..*" Notification : receives >
+Notification "0..*" -- "1" Report : concerns >
+
+Administrator "1" -- "0..*" TestType : configures >
+Administrator "1" -- "0..*" Parameter : configures >
+Administrator "1" -- "0..*" ClinicalAnalysisLaboratory : manages >
+
+@enduml
