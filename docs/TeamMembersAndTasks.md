@@ -4,12 +4,12 @@
 
 The team consists of the students listed in the table below. 
 
-| Student Number	 | Name |
-|-----------------|----------------------------|
-| **1XXXXXX**     | Name of student 1          |
-| **1XXXXXX**     | Name of student 2          |
-| **1XXXXXX**     | Name of student 3          |
-| **1XXXXXX**     | Name of student 4          |
+| Student Number	 | Name          |
+|-----------------|---------------|
+| **1200858**     | Diogo Silva   |
+| **1210977**     | Nuno Teixeira |
+| **1211902**     | João Silva    |
+| **1240708**     | Rúben Silva   |
 
 
 # 2. Task Distribution ###
@@ -27,16 +27,12 @@ Finally, keep in mind that each User Story is not isolated — it must be integr
 
 **The following table must always be kept up to date.**
 
-| Task                                                                                               | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 |
-|----------------------------------------------------------------------------------------------------|:--------:|:--------:|:--------:|:--------:|
-| [Glossary](system-documentation/global-artifacts/glossary.md)                                      |   all    |   all    |   all    |   all    |
-| [Use Case Diagram (UCD)](system-documentation/global-artifacts/use-case-diagram.md)                |   all    |   all    |   all    |   all    |
-| [Supplementary Specification](system-documentation/global-artifacts/suplementary-specification.md) |   all    |   all    |   all    |   all    |
-| [Domain Model](system-documentation/global-artifacts/analysis.md)                                  |   all    |   all    |   all    |   all    |
-| [US01](system-documentation/US01) (SDP Activities)                                                 |          | 1XXXXXX  |          |          |
-| [US02](system-documentation/US02) (SDP Activities)                                                 |          | 1XXXXXX  |          |          |
-| [US03](system-documentation/US03) (SDP Activities)                                                 |          | 1XXXXXX  |          |          |
-| ...                                                                                                |   ...    |   ...    |   ...    |   ...    |
-| ...                                                                                                |   ...    |   ...    |   ...    |   ...    |
+
+| Task                                                                                                     | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 |
+|:---------------------------------------------------------------------------------------------------------|:---:|:---:|:---:|:---:|
+| [Glossary](docs/system-documentation/global-artifacts/glossary.md)                                       | all | all | all | all |
+| [Use Case Diagram (UCD)](docs/system-documentation/global-artifacts/use-case-diagram.md)                 | all | all | all | all |
+| [Supplementary Specification](docs/system-documentation/global-artifacts/supplementary-specification.md) | all | all | all | all |
+| [Domain Model](docs/system-documentation/global-artifacts/analysis.md)                                   | all | all | all | all |
 
 
