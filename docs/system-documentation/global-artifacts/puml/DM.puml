@@ -1,4 +1,8 @@
 @startuml
+' UKLabsMS - Sprint 1 conceptual domain model
+' Multiplicities and modeling assumptions are justified in analysis.md.
+title UKLabsMS - Domain Model
+
 hide methods
 hide circle
 skinparam classAttributeIconSize 0
@@ -31,7 +35,6 @@ class ClinicalAnalysisLaboratory {
 }
 
 class ChemicalLaboratory
-
 class LabOrder
 
 class RegisteredTest {
@@ -69,27 +72,32 @@ class ParameterResult {
 }
 
 class Diagnosis
-
 class Report
-
 class Notification
 
-Client "1" -- "1..*" LabOrder : submits >
-Client "1" -- "0..*" RegisteredTest : is performed on <
+' Clients, prescriptions, tests and test definitions
+Client "1" -- "0..*" LabOrder : submits >
+Client "1" -- "0..*" RegisteredTest : is associated with >
 Receptionist "1" -- "0..*" RegisteredTest : registers >
 
-LabOrder "1" -- "1..*" RegisteredTest : contains >
+' Current simplifying assumption: one registered test per lab order
+LabOrder "1" -- "1" RegisteredTest : corresponds to >
 RegisteredTest "0..*" -- "1" TestType : is classified as >
-ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest : collects at >
+ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest : collects samples for >
 
-TestType "1..*" -- "1..*" Parameter : measures >
-Parameter "1" -- "0..1" ReferenceRange : includes >
+' Assumption: parameters can be reused across test types;
+' a catalogued parameter may exist before being assigned to a test type.
+TestType "0..*" -- "1..*" Parameter : measures >
+Parameter "1" -- "0..1" ReferenceRange : has >
 
-RegisteredTest "1" -- "1..*" Sample : requires >
-MedicalLabTechnician "1" -- "0..*" Sample : collects >
-Courier "1" -- "0..*" Sample : transports >
+' Registered tests may exist before any sample is collected.
+RegisteredTest "1" -- "0..*" Sample : has >
+MedicalLabTechnician "1" -- "0..*" Sample : registers >
+' Optional until transported; courier tracking is a modeling assumption.
+Courier "0..1" -- "0..*" Sample : transports >
 
-Sample "1" -- "0..1" ChemicalAnalysis : is analyzed in >
+' Assumption: the same sample may be analyzed more than once.
+Sample "1" -- "0..*" ChemicalAnalysis : undergoes >
 ChemicalLaboratory "1" -- "0..*" ChemicalAnalysis : hosts >
 ClinicalChemistryTechnologist "1" -- "0..*" ChemicalAnalysis : performs >
 
@@ -104,8 +112,9 @@ SpecialistDoctor "1" -- "0..*" Report : prepares >
 Client "1" -- "0..*" Notification : receives >
 Notification "0..*" -- "1" Report : concerns >
 
-Administrator "1" -- "0..*" TestType : configures >
-Administrator "1" -- "0..*" Parameter : configures >
-Administrator "1" -- "0..*" ClinicalAnalysisLaboratory : manages >
+' Management responsibility, not ownership by an individual administrator.
+Administrator "0..*" -- "0..*" TestType : manages >
+Administrator "0..*" -- "0..*" Parameter : manages >
+Administrator "0..*" -- "0..*" ClinicalAnalysisLaboratory : manages >
 
 @enduml
