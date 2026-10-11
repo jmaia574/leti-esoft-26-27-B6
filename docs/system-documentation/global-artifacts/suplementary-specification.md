@@ -40,7 +40,7 @@ This section specifies functionality shared across multiple use cases or not exc
 Clinical information is sensitive and should be protected against unauthorized disclosure or modification.
 
 The application should distinguish authentication from authorization. Authentication identifies the user, while authorization determines which operations and information the user may access.
-
+    
 During prototype development, authentication may be simulated, as permitted by the Project Assignment.
 
 ### 2.2 Functional Traceability
@@ -187,14 +187,15 @@ Google Test is the preferred testing framework recommended in the Project Assign
 
 ### 7.3 Interface Constraints
 
-| ID | Requirement | Origin |
-|:---|:---|:---|
-| INT-01 | The system shall use an external API to generate barcodes for collected samples. | Specified |
-| INT-02 | The system shall support notifying clients by SMS and/or email when results become available. | Specified |
-| INT-03 | The core application shall expose APIs to support client-side applications. | Specified |
-| INT-04 | Generic HTTP client tools, such as Postman, may be used to verify and validate the exposed APIs. | Specified option |
-| INT-05 | The system should handle external API failures without corrupting existing clinical information. | Proposed |
-| INT-06 | The interfaces used for barcode generation and notifications should be abstracted to reduce dependence on specific providers. | Proposed |
+| ID     | Requirement                                                                                                                                                                                                                                                    | Origin           |
+|:-------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------|
+| INT-01 | The system shall use an external API to generate barcodes for collected samples.                                                                                                                                                                               | Specified        |
+| INT-02 | The system shall support notifying clients by SMS and/or email when results become available.                                                                                                                                                                  | Specified        |
+| INT-03 | The core application shall expose APIs to support client-side applications.                                                                                                                                                                                    | Specified        |
+| INT-04 | Generic HTTP client tools, such as Postman, may be used to verify and validate the exposed APIs.                                                                                                                                                               | Specified option |
+| INT-05 | The system should handle external API failures without corrupting existing clinical information.                                                                                                                                                               | Proposed         |
+| INT-06 | The interfaces used for barcode generation and notifications should be abstracted to reduce dependence on specific providers.                                                                                                                                  | Proposed         |
+| INT-07 | The build automation and project modular configuration shall be managed using CMake to ensure reproducible, cross-platform builds.                                                                                                                             | Specified        |
 
 ### 7.4 Physical Constraints
 
@@ -205,6 +206,21 @@ The system is expected to operate in an environment capable of supporting the re
 Hardware capacity, operating system requirements, storage capacity, and network infrastructure should be determined in later stages according to the selected deployment architecture.
 
 No additional mandatory physical constraints are assumed during Sprint 1.
+
+### 7.5 Legal and Regulatory Constraints
+
+| ID | Requirement | Origin |
+|:---|:---|:---|
+| LEG-01 | All test types, measured parameters, and patient records shall conform to English healthcare guidelines and standards defined by the National Healthcare Service (NHS). | Specified |
+| LEG-02 | The system shall enforce territorial exclusivity for Covid-19 testing, ensuring that Covid-19 tests are exclusively scheduled and conducted within the authorized subset of UK Labs clinical analysis laboratories. | Specified |
+
+#### 7.5.1 Healthcare Standards Compliance
+Client registration requires specific national identifiers, including the NHS number and Tax Identification Number (TIF)[cite: 3]. The system must preserve the integrity and confidentiality of medical data according to NHS standards[cite: 3, 10].
+
+#### 7.5.2 Regulatory Exclusivity
+UK Labs maintains commercial exclusivity for Covid-19 testing throughout England[cite: 2, 3]. However, as only a specific subset of its clinical laboratories is equipped for this purpose, the system must validate laboratory eligibility when registering Covid-19 tests[cite: 3].
+
+
 
 ## 8. Open Issues and Clarifications
 
