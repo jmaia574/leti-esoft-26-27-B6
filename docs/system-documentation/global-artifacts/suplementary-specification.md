@@ -1,4 +1,3 @@
-
 # Supplementary Specification (FURPS+)
 
 **Project:** UK Labs Management System (UKLabsMS)  
@@ -8,9 +7,9 @@
 
 ## 1. Introduction
 
-This document specifies the supplementary functional and non-functional requirements of the UK Labs Management System (UKLabsMS), using the FURPS+ classification.
+This document specifies the supplementary functional and non-functional requirements of the UK Labs Management System (UKLabsMS), using the FURPS+ classification framework.
 
-It complements the Use Case Diagram and the corresponding User Stories by describing cross-cutting functionality, quality attributes, and project constraints.
+It complements the Use Case Diagram (UCD) and the Domain Model (DM) by capturing cross-cutting functional requirements, quality attributes, and architectural constraints.
 
 Requirements are classified according to their origin:
 
@@ -18,147 +17,108 @@ Requirements are classified according to their origin:
 - **Derived:** Inferred from the business processes and rules described in the Project Assignment.
 - **Proposed:** Additional recommendations requiring stakeholder validation.
 
-The term "shall" denotes a requirement, while "should" indicates a recommendation. Proposed requirements are not considered approved unless validated by the stakeholder.
+The term "shall" denotes a mandatory requirement, while "should" indicates a recommended enhancement.
 
 ## 2. Functionality
 
-This section specifies functionality shared across multiple use cases or not exclusively associated with a particular use case, including security and information access.
+This section specifies functionality shared across multiple use cases, covering security, access control, traceability, and cross-cutting workflow rules.
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| FUN-01 | All system users shall be authenticated before accessing the application. Authentication may be simulated during the prototype stage. | Specified |
-| FUN-02 | The system shall prevent clients from accessing analysis results until the specialist doctor has prepared the corresponding report. | Specified |
-| FUN-03 | After the specialist doctor completes the diagnosis, the system shall notify the client by SMS and/or email that the analysis results and report are available. | Specified |
-| FUN-04 | The system shall support sorting clinical analysis results by the client's TIF or name. | Specified |
-| FUN-05 | The system shall maintain associations between registered tests, clients, collected samples, analysis results, and reports. | Derived |
-| FUN-06 | The system should restrict operations according to the responsibilities of each user role. | Proposed |
-| FUN-07 | The system should prevent clients from accessing another client's private clinical information. | Proposed |
-| FUN-08 | The system should maintain an audit trail of relevant changes to clinical information, including the responsible user and timestamp. | Proposed |
+| FUN-01 | All system users (Staff Members and Clients) shall be authenticated before accessing the application. Authentication may be simulated during the prototype stage. | Specified |
+| FUN-02 | The system shall prevent clients from accessing analysis results until the specialist doctor has prepared and validated the diagnostic report (`Report`). | Specified |
+| FUN-03 | Following the completion of the diagnostic report by the specialist doctor, the system shall automatically notify the client via SMS and/or email that the results and report are available. | Specified |
+| FUN-04 | The system shall support sorting clinical analysis results by the client's Tax Identification Number (`taxIdentificationNumber` / TIF) or by the client's name. | Specified |
+| FUN-05 | The system shall maintain consistent associations across the complete analysis lifecycle: `Client`, `LabOrder`, `RegisteredTest`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`. | Derived |
+| FUN-06 | The system should enforce role-based access control corresponding to the responsibilities of each `Staff Member` specialization (Administrator, Receptionist, Medical Lab Technician, Clinical Chemistry Technologist, Specialist Doctor) and `Client`. | Proposed |
+| FUN-07 | The system should prevent clients from accessing another client's private clinical and personal information. | Proposed |
+| FUN-08 | The system should maintain an audit trail of critical clinical operations, recording the responsible employee, operation type, and exact timestamp. | Proposed |
 
-### 2.1 Security
+### 2.1 Security and Access Control
 
-Clinical information is sensitive and should be protected against unauthorized disclosure or modification.
+Clinical records are strictly confidential and must be protected against unauthorized disclosure or tampering.
 
-The application should distinguish authentication from authorization. Authentication identifies the user, while authorization determines which operations and information the user may access.
-    
-During prototype development, authentication may be simulated, as permitted by the Project Assignment.
+The system distinguishes authentication from authorization:
+- **Authentication:** Verifies the user's identity (simulated during the prototype stage).
+- **Authorization:** Restricts system operations according to the user's role (enforcing the hierarchy defined for `Staff Member` actors).
 
 ### 2.2 Functional Traceability
 
-- FUN-01 relates to UC01 (Authenticate User).
-- FUN-02 relates to UC11 and UC13.
-- FUN-03 relates to UC12.
-- FUN-04 relates to UC13 and result consultation.
-- FUN-05 applies across UC06 to UC11.
-- FUN-06 to FUN-08 are proposed cross-cutting enhancements.
+- **FUN-01** maps to **UC01 (Authenticate User)**.
+- **FUN-02** maps to **UC11 (Prepare Diagnostic Report)** and **UC12 (View Test Results and Report)**, enforcing Business Rule BR05.
+- **FUN-03** maps to **UC11 (Prepare Diagnostic Report)** as an automated post-condition notification, enforcing Business Rule BR06.
+- **FUN-04** maps to **UC12 (View Test Results and Report)**.
+- **FUN-05** spans across the clinical workflow use cases: **UC06 (Register Client)**, **UC07 (Register Prescribed Test)**, **UC08 (Register Sample)**, **UC10 (Record Chemical Analysis Results)**, and **UC11 (Prepare Diagnostic Report)**.
+- **FUN-06 to FUN-08** represent cross-cutting architectural constraints applicable to all operational use cases (**UC02 to UC12**).
 
 ## 3. Usability
 
-The Project Assignment allows a basic console-based user interface for demonstration purposes. Dedicated web and mobile interfaces are envisioned for future development but are outside the current prototype scope.
-
-The following requirements are proposed usability improvements.
+While dedicated web and mobile interfaces are envisioned for future production stages, a basic console-based user interface (`ConsoleApp`) is sufficient for prototype demonstration.
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| USA-01 | The console interface should provide clear, descriptive options corresponding to the operations available to the authenticated user. | Proposed |
-| USA-02 | The application should display understandable error messages when input is invalid or an operation cannot be completed. | Proposed |
-| USA-03 | The application should validate required input fields before accepting a registration or update operation. | Proposed |
-| USA-04 | The interface should use consistent terminology aligned with the project glossary. | Proposed |
-| USA-05 | The application should provide confirmation messages after successfully completing relevant operations. | Proposed |
-| USA-06 | The application should allow users to cancel an operation before committing changes, where applicable. | Proposed |
+| USA-01 | The console interface should provide clear, descriptive navigation menus aligned with the permissions of the authenticated user role. | Proposed |
+| USA-02 | The application should display understandable, actionable error messages whenever input validation fails or an operation cannot be completed. | Proposed |
+| USA-03 | The application should validate all mandatory input fields (e.g., NHS number, citizen card number, TIF) before persisting a registration or update. | Proposed |
+| USA-04 | The user interface should strictly use terminology consistent with the Project Glossary, Use Case Diagram, and Domain Model. | Proposed |
+| USA-05 | The application should present explicit confirmation prompts and success feedback messages upon completing relevant state-modifying operations. | Proposed |
+| USA-06 | The application should allow users to cancel an operation before committing changes to the persistence layer. | Proposed |
 
 ### 3.1 Usability Considerations
 
-The prototype should prioritize clarity, consistency, and error prevention rather than visual complexity.
-
-The terminology used in the interface should remain consistent with the Glossary and the Domain Model.
+The console interface must prioritize workflow clarity, data consistency, and robust input validation over visual complexity. All screen prompts, outputs, and menu options must be presented in English.
 
 ## 4. Reliability
 
-Reliability is particularly important because the system manages clinical information and must preserve recorded data.
+Reliability is critical because the system manages sensitive clinical records and laboratory analysis results.
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| REL-01 | The system shall ensure that no data is lost in the event of a failure. | Specified |
+| REL-01 | The system shall ensure that no data is lost in the event of an unexpected failure or abnormal termination. | Specified |
 | REL-02 | The overall annual system availability shall exceed 99%. | Specified |
-| REL-03 | The system should ensure that registration and update operations do not leave partially inconsistent records after a failure. | Derived |
-| REL-04 | The system should detect invalid or inconsistent references between related clinical records. | Derived |
-| REL-05 | The system should provide mechanisms for detecting and reporting failures in external service communication. | Proposed |
-| REL-06 | The system should support recovery procedures that preserve previously committed data. | Proposed |
+| REL-03 | Persistence operations should be transactional, ensuring that no partially inconsistent records remain after a failure. | Derived |
+| REL-04 | The system should validate referential integrity between related entities (`RegisteredTest`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`). | Derived |
+| REL-05 | The system should detect and report communication failures with external services (such as the Barcode Generation API or notification gateways). | Proposed |
+| REL-06 | The system should provide recovery mechanisms that preserve previously committed transactional data upon reboot. | Proposed |
 
 ### 4.1 Data Integrity
 
-The system shall preserve the integrity of information related to clients, registered tests, samples, parameters, analysis results, and diagnostic reports.
+The system must guarantee the consistency and persistence of information associated with clients, registered tests, biological samples, parameter measurements, and medical reports.
 
-Persistence operations should avoid incomplete or inconsistent modifications, particularly when failures occur during an operation.
+Transactional boundaries must prevent partial updates, specifically during sample registration, results recording, and report validation.
 
-### 4.2 Availability
+### 4.2 Availability Verification
 
-Annual availability must exceed 99%, as specified in the Project Assignment.
-
-The precise operational conditions, planned maintenance policy, and method of measuring availability should be clarified with the stakeholder.
-
-### 4.3 Verification
-
-Reliability testing should include:
-
-- Simulated failures during data modification.
-- Verification that previously committed information remains available.
-- Validation of relationships between related records.
-- Verification of recovery behavior after unexpected termination.
+Annual availability exceeding 99% must be supported through resilient software architecture, fault-tolerant persistence, and rapid restart capabilities.
 
 ## 5. Performance
 
-The Project Assignment establishes explicit requirements for start-up time and response time.
+The system must comply with strict startup and response time limits established in the Project Assignment.
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| PER-01 | The system shall start in less than 10 seconds. | Specified |
-| PER-02 | The system shall provide a maximum response time of 5 seconds, regardless of load conditions. | Specified |
-| PER-03 | The system shall be designed to handle high loads during peak operating periods while respecting the response-time requirement. | Specified |
-| PER-04 | The team should define representative performance tests covering the main system operations. | Proposed |
+| PER-01 | The system shall complete its startup procedure in less than 10 seconds. | Specified |
+| PER-02 | The system shall provide a maximum response time of 5 seconds for any request, regardless of load conditions. | Specified |
+| PER-03 | The system architecture shall handle peak operating loads while maintaining the 5-second response time threshold. | Specified |
+| PER-04 | Representative automated performance and load benchmarks should be defined to measure key operational workflows. | Proposed |
 
-### 5.1 Start-up Performance
+### 5.1 Acceptance Criteria
 
-**Acceptance criterion:** The elapsed time between initiating system start-up and the system becoming ready to process requests must be strictly less than 10 seconds.
-
-### 5.2 Response Time
-
-**Acceptance criterion:** The elapsed time between receiving a request and providing its response must not exceed 5 seconds under the evaluated load conditions.
-
-### 5.3 Load Considerations
-
-The Project Assignment refers to high peak loads but does not define a specific number of simultaneous users or requests.
-
-A representative workload must therefore be agreed upon before quantitative load testing.
-
-No maximum memory consumption or CPU utilization value is explicitly specified.
+- **Startup Time:** The elapsed time between process launch and readiness to handle user requests must be strictly under 10 seconds.
+- **Response Time:** The duration between request submission and response presentation must not exceed 5 seconds under all evaluated operating scenarios.
 
 ## 6. Supportability
 
-The application must be designed with maintainability and adaptability in mind, particularly regarding future technology and business changes.
+The software product must be designed for long-term maintainability, adaptability, and testability.
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| SUP-01 | The system shall be designed to support data persistence using relational, NoSQL, and in-memory databases. | Specified |
-| SUP-02 | The system shall be designed to support different test types containing one or multiple parameters. | Specified |
-| SUP-03 | Project artifacts and source code shall be developed in English. | Specified |
-| SUP-04 | The project should include automated regression tests, preferably using the Google Testing Framework. | Specified recommendation |
-| SUP-05 | The architecture should separate business logic from infrastructure-specific persistence mechanisms. | Proposed |
-| SUP-06 | The implementation should favor modular and maintainable components. | Proposed |
-| SUP-07 | The system should allow the addition of new test types without significant changes to unrelated functionality. | Derived |
-
-### 6.1 Maintainability
-
-The project should follow software engineering principles that promote readability, modularity, and low coupling.
-
-Clear responsibility boundaries should be established between domain logic, application services, persistence mechanisms, and user interaction.
-
-### 6.2 Testability
-
-Automated tests should verify business rules, data validation, and relevant system behavior.
-
-Google Test is the preferred testing framework recommended in the Project Assignment.
+| SUP-01 | The system shall be designed to support multiple persistence mechanisms, including relational, NoSQL, and in-memory databases. | Specified |
+| SUP-02 | The system shall easily support different test types (`TestType`) measuring one (e.g., COVID-19) or multiple parameters (`Parameter`), with optional reference ranges (`ReferenceRange`). | Specified |
+| SUP-03 | All project artifacts, source code, commit messages, and documentation shall be developed strictly in English. | Specified |
+| SUP-04 | Automated regression testing shall be adopted across all core components, implemented using the Google Testing Framework (GoogleTest). | Specified recommendation |
+| SUP-05 | The architecture should enforce separation of concerns, decoupling domain business logic from UI, persistence, and external APIs. | Proposed |
+| SUP-06 | The domain model and service components should be highly cohesive and loosely coupled. | Proposed |
 
 ## 7. Additional Constraints (+)
 
@@ -167,77 +127,59 @@ Google Test is the preferred testing framework recommended in the Project Assign
 | ID | Requirement | Origin |
 |:---|:---|:---|
 | DES-01 | The core application shall be developed in C++. | Specified |
-| DES-02 | The system shall include a core server-side application responsible for maintaining data, enforcing business logic, and exposing APIs to client applications. | Specified |
-| DES-03 | A basic console-based user interface is sufficient for prototype demonstration. | Specified |
-| DES-04 | Dedicated web and mobile applications are outside the current prototype development scope. | Specified |
-| DES-05 | The design should support separation between the core application and client-facing applications. | Derived |
-| DES-06 | The project should use CLion as the preferred development environment. | Specified recommendation |
+| DES-02 | The system shall be structured into a server-side core application responsible for business logic, persistence, and API exposure. | Specified |
+| DES-03 | A basic console-based user interface (`ConsoleApp`) is sufficient for prototype demonstration during the initial phases. | Specified |
+| DES-04 | Dedicated web and mobile user interfaces are outside the scope of the current prototype. | Specified |
+| DES-05 | The design should use the CLion IDE as the preferred development environment. | Specified recommendation |
 
 ### 7.2 Implementation Constraints
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| IMP-01 | All project artifacts, including source code, shall be written in English. | Specified |
-| IMP-02 | GitHub shall be used as the version control system throughout project development. | Specified |
-| IMP-03 | Source code, documentation, diagrams, configuration files, and other project artifacts shall be maintained in the repository. | Specified |
-| IMP-04 | Images stored in the repository shall use SVG format. | Specified |
-| IMP-05 | The repository name shall follow the convention leti-esoft-26-27-[LabClass][TeamNumber]. | Specified |
-| IMP-06 | Team tasks shall be planned and documented using the TeamMembersAndTasks.md template. | Specified |
-| IMP-07 | The team should adopt automated regression testing, preferably using Google Test. | Specified recommendation |
+| IMP-01 | All source code, documentation, and diagrams shall be written in English. | Specified |
+| IMP-02 | GitHub shall be used as the version control system throughout development. | Specified |
+| IMP-03 | All project artifacts must be maintained in the Git repository following clean repository management practices. | Specified |
+| IMP-04 | All diagram images stored and embedded in the repository documentation shall be in SVG format. | Specified |
+| IMP-05 | The repository name shall follow the required convention: `leti-esoft-26-27-[LabClass][TeamNumber]`. | Specified |
+| IMP-06 | Team task planning and tracking shall be documented in `TeamMembersAndTasks.md`. | Specified |
+| IMP-07 | Unit and integration testing shall use GoogleTest, structured in the `CoreTests` module. | Specified recommendation |
+| IMP-08 | The project build configuration and dependency management shall be managed using CMake. | Specified |
 
 ### 7.3 Interface Constraints
 
-| ID     | Requirement                                                                                                                                                                                                                                                    | Origin           |
-|:-------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------------|
-| INT-01 | The system shall use an external API to generate barcodes for collected samples.                                                                                                                                                                               | Specified        |
-| INT-02 | The system shall support notifying clients by SMS and/or email when results become available.                                                                                                                                                                  | Specified        |
-| INT-03 | The core application shall expose APIs to support client-side applications.                                                                                                                                                                                    | Specified        |
-| INT-04 | Generic HTTP client tools, such as Postman, may be used to verify and validate the exposed APIs.                                                                                                                                                               | Specified option |
-| INT-05 | The system should handle external API failures without corrupting existing clinical information.                                                                                                                                                               | Proposed         |
-| INT-06 | The interfaces used for barcode generation and notifications should be abstracted to reduce dependence on specific providers.                                                                                                                                  | Proposed         |
-| INT-07 | The build automation and project modular configuration shall be managed using CMake to ensure reproducible, cross-platform builds.                                                                                                                             | Specified        |
+| ID | Requirement | Origin |
+|:---|:---|:---|
+| INT-01 | The system shall integrate with an external Barcode Generation API to automatically generate barcodes for collected samples (`Sample`). | Specified |
+| INT-02 | The system shall integrate with external notification services to dispatch SMS and/or email notifications to clients upon report availability. | Specified |
+| INT-03 | The core business logic and persistence engine shall expose a dedicated Library API (`UKLabsMS Library API`) consumed directly by the `ConsoleApp`. | Specified |
+| INT-04 | The system architecture shall be prepared to expose a REST API (`UKLabsMS REST API`) and a Mobile API (`UKLabsMS Mobile API`) for future client applications. | Specified |
+| INT-05 | The business logic layer shall interact with data storage through an abstracted Persistence API (`Persistence API`), isolating persistence technology from business rules. | Specified |
+| INT-06 | Generic HTTP client tools (such as Postman) may be used to verify and validate exposed REST endpoints. | Specified option |
 
 ### 7.4 Physical Constraints
 
-The Project Assignment does not specify mandatory hardware characteristics, physical dimensions, or particular deployment equipment.
-
-The system is expected to operate in an environment capable of supporting the required availability, persistence, and performance characteristics.
-
-Hardware capacity, operating system requirements, storage capacity, and network infrastructure should be determined in later stages according to the selected deployment architecture.
-
-No additional mandatory physical constraints are assumed during Sprint 1.
+The Project Assignment does not specify mandatory physical server dimensions or dedicated hardware. The system shall run in execution environments capable of fulfilling the availability (>99%), startup (<10s), and response time (<5s) thresholds.
 
 ### 7.5 Legal and Regulatory Constraints
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| LEG-01 | All test types, measured parameters, and patient records shall conform to English healthcare guidelines and standards defined by the National Healthcare Service (NHS). | Specified |
-| LEG-02 | The system shall enforce territorial exclusivity for Covid-19 testing, ensuring that Covid-19 tests are exclusively scheduled and conducted within the authorized subset of UK Labs clinical analysis laboratories. | Specified |
-
-#### 7.5.1 Healthcare Standards Compliance
-Client registration requires specific national identifiers, including the NHS number and Tax Identification Number (TIF)[cite: 3]. The system must preserve the integrity and confidentiality of medical data according to NHS standards[cite: 3, 10].
-
-#### 7.5.2 Regulatory Exclusivity
-UK Labs maintains commercial exclusivity for Covid-19 testing throughout England[cite: 2, 3]. However, as only a specific subset of its clinical laboratories is equipped for this purpose, the system must validate laboratory eligibility when registering Covid-19 tests[cite: 3].
-
-
+| LEG-01 | Patient registration and clinical records must comply with National Healthcare Service (NHS) guidelines and English healthcare regulations. | Specified |
+| LEG-02 | The system shall enforce territorial exclusivity for COVID-19 testing, ensuring COVID-19 tests are registered exclusively at the authorized subset of clinical analysis laboratories (enforcing Business Rule BR01). | Specified |
 
 ## 8. Open Issues and Clarifications
 
-The following matters require additional clarification or future design decisions:
-
 | ID | Open Issue |
 |:---|:---|
-| OI-01 | What number of simultaneous users or requests should be considered representative of peak load? |
-| OI-02 | What operational conditions and maintenance periods should be considered when measuring annual availability? |
-| OI-03 | Which authentication and authorization mechanisms are expected beyond the prototype stage? |
-| OI-04 | Which external providers or technical protocols should be used for barcode generation and client notifications? |
-| OI-05 | Which persistence technologies will be used to demonstrate support for relational, NoSQL, and in-memory databases? |
-| OI-06 | What are the expected procedures for recovering data and service after a failure? |
+| OI-01 | What quantitative concurrent user load should be considered representative of peak operating hours? |
+| OI-02 | What scheduled maintenance windows are permitted when evaluating the 99% annual availability requirement? |
+| OI-03 | What specific third-party providers or protocol standards will be designated for the Barcode Generation API and notification gateways? |
+| OI-04 | Which database technology (relational, NoSQL, or in-memory) will be prioritized for initial end-to-end evaluation? |
 
 ## 9. References
 
-- LETI-ESOFT 2026/2027 - Project Assignment.
-- LETI-ESOFT 2026/2027 - Project Sprint 1.
-- UKLabsMS Use Case Diagram.
-- UKLabsMS Glossary.
+- LETI-ESOFT 2026/2027 — Project Assignment.
+- LETI-ESOFT 2026/2027 — Project Sprint 1.
+- UKLabsMS — Use Case Diagram (`use-case-diagram.md`).
+- UKLabsMS — OO Analysis & Domain Model (`analysis.md`).
+- UKLabsMS — Project Glossary (`glossary.md`).
