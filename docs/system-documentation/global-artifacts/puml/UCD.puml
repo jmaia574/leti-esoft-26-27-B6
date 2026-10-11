@@ -1,160 +1,71 @@
-
 @startuml
-title UKLabsMS - Use Case Diagram\nLETI-ESOFT 2026/2027 | Sprint 1 | Team B6
+title UKLabsMS - Use Case Diagram
 
 left to right direction
 
-skinparam backgroundColor #FFFFFF
-skinparam shadowing false
-skinparam roundcorner 12
-skinparam packageStyle rectangle
-skinparam linetype ortho
-skinparam defaultFontName Arial
-skinparam ArrowColor #475569
-skinparam ActorBorderColor #334155
-skinparam ActorFontColor #1E293B
-skinparam UsecaseBorderColor #2563EB
-skinparam UsecaseBackgroundColor #EFF6FF
-skinparam UsecaseFontColor #1E293B
-skinparam RectangleBorderColor #64748B
-skinparam RectangleFontColor #1E293B
-
-' ==========================================
 ' ACTORS
-' ==========================================
-
+actor Receptionist
+actor "Medical Lab Technician" as LabTech
+actor Client
+actor "Specialist Doctor" as Doctor
+actor "Clinical Chemistry Technologist" as CCT
+actor "Administrator" as Admin
+rectangle "«actor»\nBarcode Generation API" as BarcodeAPI
 actor "Staff Member" as Staff
-actor "Administrator" as ADM
-actor "Receptionist" as REC
-actor "Medical Lab\nTechnician" as MLT
-actor "Clinical Chemistry\nTechnologist" as CCT
-actor "Specialist Doctor" as DOC
-actor "Client" as CLT
 
-actor "External Barcode\nGeneration API" as BAR
-actor "Notification\nService" as NOT
 
-ADM --|> Staff
-REC --|> Staff
-MLT --|> Staff
-CCT --|> Staff
-DOC --|> Staff
-
-' ==========================================
-' SYSTEM BOUNDARY
-' ==========================================
-
-rectangle "UK Labs Management System (UKLabsMS)" {
-
-  package "Access Management" {
-    usecase "UC01\nAuthenticate User" as UC01
-  }
-
-  package "Core Information Management" {
-    usecase "UC02\nManage Clinical\nAnalysis Laboratories" as UC02
-    usecase "UC03\nManage Employees" as UC03
-    usecase "UC04\nManage Test Types" as UC04
-    usecase "UC05\nManage Parameters" as UC05
-  }
-
-  package "Client and Test Registration" {
-    usecase "UC06\nRegister Client" as UC06
-    usecase "UC07\nRegister Prescribed Test" as UC07
-  }
-
-  package "Sample Management" {
-    usecase "UC08\nRecord Sample Collection" as UC08
-    usecase "UC09\nGenerate Sample Barcode" as UC09
-  }
-
-  package "Chemical Analysis" {
-    usecase "UC10\nRecord Chemical\nAnalysis Results" as UC10
-  }
-
-  package "Diagnosis and Reporting" {
-    usecase "UC11\nPrepare Diagnostic Report" as UC11
-    usecase "UC12\nNotify Client of\nAvailable Results" as UC12
-  }
-
-  package "Results Consultation" {
-    usecase "UC13\nView Results and Report" as UC13
-  }
+'USE CASES
+rectangle "UKLabsMS" {
+    usecase "UC01\nAuthenticate User" as UC_AuthenticateUser
+    usecase "UC02\nManage Clinical Analysis Laboratories" as UC_Laboratories
+    usecase "UC03\nManage Employees" as UC_Employees
+    usecase "UC04\nManage Test Types" as UC_TestTypes
+    usecase "UC05\nManage Parameters" as UC_Parameters
+    usecase "UC06\nRegister Client" as UC_RegisterClient
+    usecase "UC07\nRegister Prescribed Test" as UC_RegisterTest
+    usecase "UC08\nRegister Sample" as UC_RegisterSample
+    usecase "UC09\nObtain Sample Barcode" as UC_Barcode
+    usecase "UC10\nRecord Chemical Analysis Results" as UC_RecordTestResults
+    usecase "UC11\nPrepare Diagnostic Report" as UC_WriteDiagnosis
+    usecase "UC12\nView Test Results and Report" as UC_ViewResults
 }
 
-' ==========================================
-' ACTOR ASSOCIATIONS
-' ==========================================
+'ASSOCIATION
+Receptionist -- UC_RegisterClient
+Receptionist -- UC_RegisterTest
+LabTech -- UC_RegisterSample
+CCT -- UC_RecordTestResults
+Doctor -- UC_WriteDiagnosis
+Client -- UC_ViewResults
+Client -- UC_AuthenticateUser
+Admin -- UC_TestTypes
+Admin -- UC_Parameters
+Admin -- UC_Laboratories
+Admin -- UC_Employees
+BarcodeAPI -- UC_Barcode
+UC_RegisterSample ..> UC_Barcode : <<include>>
+Staff -- UC_AuthenticateUser
+Staff <|-- Receptionist
+Staff <|-- LabTech
+Staff <|-- CCT
+Staff <|-- Doctor
+Staff <|-- Admin
 
-Staff -- UC01
-CLT -- UC01
-
-ADM -- UC02
-ADM -- UC03
-ADM -- UC04
-ADM -- UC05
-
-REC -- UC06
-REC -- UC07
-
-MLT -- UC08
-CCT -- UC10
-DOC -- UC11
-
-CLT -- UC13
-
-BAR -- UC09
-NOT -- UC12
-
-' ==========================================
-' INCLUDE RELATIONSHIPS
-' ==========================================
-
-UC08 ..> UC09 : <<include>>
-
-' ==========================================
-' REQUIREMENTS AND BUSINESS RULES
-' ==========================================
-
-note bottom of UC07
-  The receptionist records:
-  - Client
-  - Prescribed test type
-  - Parameters to measure
-  - Prescription date
-  - Sample collection date
-  - Collection laboratory
+'NOTES
+note right of UC_WriteDiagnosis
+  After the specialist doctor completes
+  the diagnosis report, the system
+  notifies the client via SMS and/or e-mail.
 end note
 
-note bottom of UC08
-  Each collected sample is
-  associated with a registered
-  test and identified by an
-  automatically generated barcode.
+note right of UC_ViewResults
+  Clients may only access their test
+  results after the specialist doctor
+  has completed the diagnosis report.
 end note
 
-note bottom of UC10
-  For each measured parameter:
-  - Result value
-  - Analysis date and time
-end note
-
-note bottom of UC11
-  The specialist doctor examines
-  the analysis results, establishes
-  a diagnosis and prepares a report.
-end note
-
-note bottom of UC12
-  After the diagnosis and report
-  are completed, the system
-  notifies the client by SMS
-  and/or email.
-end note
-
-note bottom of UC13
-  Clients may view their results
-  only after the specialist
-  doctor has prepared the report.
-end note
 
 @enduml
+
+
+
