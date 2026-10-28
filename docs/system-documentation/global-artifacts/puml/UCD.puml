@@ -45,11 +45,11 @@ Admin -- UC_Employees
 BarcodeAPI -- UC_Barcode
 UC_RegisterSample ..> UC_Barcode : <<include>>
 Staff -- UC_AuthenticateUser
+Admin -- UC_AuthenticateUser
 Staff <|-- Receptionist
 Staff <|-- LabTech
 Staff <|-- CCT
 Staff <|-- Doctor
-Staff <|-- Admin
 
 'NOTES
 note right of UC_WriteDiagnosis
@@ -66,6 +66,3 @@ end note
 
 
 @enduml
-
-
-

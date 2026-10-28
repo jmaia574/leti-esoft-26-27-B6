@@ -4,71 +4,92 @@
 
 This document explains the identification of conceptual classes and associations in the UK Labs Management System (UKLabsMS) domain model for Sprint 1. The model is derived primarily from Section 2.1 (*Business Context*) of the **LETI-ESOFT 2026/2027 Project Assignment**. It represents business concepts, not C++ implementation classes, user interfaces, database tables or the chronological order of operations.
 
-The domain model is preliminary. Some multiplicities and concepts are based on **explicit modeling assumptions**, identified below, because the assignment does not fully define every business constraint.
+The model represents the UK Labs business domain. Where the number of related instances is unrestricted, the model uses an open-ended multiplicity.
 
 ## 2. Rationale to identify domain conceptual classes
 
 The following candidates were identified using nouns and noun phrases in the assignment, grouped by conceptual-class categories suggested by *Applying UML and Patterns* (Craig Larman).
 
-| Conceptual class category | Identified concepts | Rationale |
-|:---|:---|:---|
+| Conceptual class category       | Identified concepts | Rationale |
+|:--------------------------------|:---|:---|
 | Business transactions / records | `RegisteredTest`, `ChemicalAnalysis` | A test is registered for a client; a chemical analysis is performed and its results recorded. |
-| Transaction-related documents | `LabOrder`, `Report` | The client presents a doctor's prescription; the specialist doctor produces a diagnostic report. |
+| Transaction-related documents   | `LabOrder`, `Report` | The client presents a doctor's prescription; the specialist doctor produces a diagnostic report. |
 | Roles of people | `Client`, `Receptionist`, `MedicalLabTechnician`, `ClinicalChemistryTechnologist`, `SpecialistDoctor`, `Administrator`, `Courier` | These represent distinct participants in the laboratory workflow or management of core information. `Courier` participates in physical sample delivery, though software tracking of couriers is not specified. |
-| Places | `ClinicalAnalysisLaboratory`, `ChemicalLaboratory` | Samples are collected at laboratories across England and analyzed at the central chemical laboratory. |
-| Descriptions of services | `TestType`, `Parameter`, `ReferenceRange` | A test type defines the kind of test, measurable parameters, and optional reference limits. |
-| Physical objects | `Sample` | Biological samples are collected, associated with registered tests, and identified by barcodes. |
-| Records of measured values | `ParameterResult` | For each measured parameter, a value and analysis date/time are recorded. |
-| Clinical conclusions | `Diagnosis` | A specialist doctor interprets the results and establishes a diagnosis. |
-| Communications | `Notification` | The client is informed by SMS and/or e-mail once results are available. |
+| Places                          | `ClinicalAnalysisLaboratory`, `ChemicalLaboratory` | Samples are collected at laboratories across England and analyzed at the central chemical laboratory. |
+| Descriptions of services        | `TestType`, `Parameter`, `ReferenceRange` | A test type defines the kind of test; parameters describe what is measured and may have reference limits. |
+| Association class               | `TestTypeParameter` | Represents the many-to-many association between a test type and a parameter, and allows a registered test to refer to the parameters specified in its lab order. |
+| Physical objects                | `Sample` | Biological samples are collected, associated with registered tests, and identified by barcodes. |
+| Records of measured values      | `ParameterResult` | For each measured parameter, a value and analysis date/time are recorded. |
+| Clinical conclusions            | `Diagnosis` | A specialist doctor interprets the results and establishes a diagnosis. |
+| Communications                  | `Notification` | The client is informed by SMS and/or e-mail once results are available. |
 
-**Conceptual-class distinction:** `TestType` describes a type of examination available in the catalogue; `RegisteredTest` represents a particular prescribed examination registered for an individual client. `Parameter` defines what may be measured; `ParameterResult` records the value obtained in an actual analysis.
+**Conceptual-class distinction:** `TestType` describes a type of examination available in the catalogue; `RegisteredTest` represents a particular prescribed examination registered for an individual client. `TestTypeParameter` associates a test type with one of its measurable parameters and is referenced by a registered test to record the parameters in its lab order. `Parameter` defines what may be measured; `ParameterResult` records the value obtained in an actual analysis.
 
 **Not modeled as conceptual classes:** the user interface, C++ controllers, API calls, and the barcode-generation service. The barcode is represented as an attribute of `Sample`; the external API is an integration relevant to the Use Case Diagram and subsequent design, not necessarily a persistent domain entity.
 
 ## 3. Rationale to identify associations
 
-Associations were selected when the assignment describes a meaningful business link between concepts, based on the general association patterns described by Larman (e.g., *contains*, *records*, *describes*, *performs*, or *is associated with*).
+Associations were selected when they describe a meaningful business link between concepts, based on the general association patterns described by Larman (e.g., *contains*, *records*, *describes*, *performs*, or *is associated with*).
 
-| Concepts | Association | Reason |
-|:---|:---|:---|
-| `Client` — `LabOrder` | submits | A client arrives with a medical prescription. |
-| `Client` — `RegisteredTest` | is associated with | Registered clinical tests concern individual clients. |
-| `Receptionist` — `RegisteredTest` | registers | Receptionists enter prescribed tests into the application. |
-| `LabOrder` — `RegisteredTest` | corresponds to | A prescription is the basis for registering the prescribed examination. |
-| `RegisteredTest` — `TestType` | is classified as | Each registered test has a specific test type. |
-| `ClinicalAnalysisLaboratory` — `RegisteredTest` | collects samples for | The test records the laboratory at which samples are collected. |
-| `TestType` — `Parameter` | measures | A type of test involves one or more measurable parameters. |
-| `Parameter` — `ReferenceRange` | has | Some parameters have optional minimum and maximum reference values. |
-| `RegisteredTest` — `Sample` | has | Collected samples are recorded against the registered test. |
-| `MedicalLabTechnician` — `Sample` | registers | Technicians collect and record the samples. |
-| `Courier` — `Sample` | transports | Samples are delivered by courier to the central laboratory. |
-| `Sample` — `ChemicalAnalysis` | undergoes | Chemical analyses are performed on samples. |
-| `ChemicalLaboratory` — `ChemicalAnalysis` | hosts | Chemical analyses are performed in the central chemical laboratory. |
-| `ClinicalChemistryTechnologist` — `ChemicalAnalysis` | performs | The technologist performs the analysis and records its results. |
-| `ChemicalAnalysis` — `ParameterResult` | records | Chemical analysis yields the measured results. |
-| `Parameter` — `ParameterResult` | measured by | Every recorded measured value corresponds to a parameter definition. |
-| `RegisteredTest` — `Report` | results in | A report becomes available after interpretation of the test results. |
-| `Report` — `Diagnosis` | contains | The specialist doctor's diagnosis is included in the report. |
-| `Report` — `ParameterResult` | presents | The report makes the analysis results available to the client. |
-| `SpecialistDoctor` — `Report` | prepares | The specialist doctor prepares the diagnostic report. |
-| `Client` — `Notification` | receives | Clients receive notifications that their results are available. |
-| `Notification` — `Report` | concerns | A notification refers to an available report. |
-| `Administrator` — core catalog information | manages | Administrators are responsible for managing test types, parameters, and laboratories. |
+| Concept | Association | Concept | Reason |
+|:---|:---|:---|:---|
+| `Client` | submits | `LabOrder` | A client arrives at a laboratory with a doctor's lab order. |
+| `Client` | is associated with | `RegisteredTest` | The receptionist registers the test to be performed for the client. |
+| `Receptionist` | registers | `RegisteredTest` | The receptionist records the prescribed test in the application. |
+| `LabOrder` | corresponds to | `RegisteredTest` | The test is registered from the lab order presented by the client. |
+| `RegisteredTest` | is classified as | `TestType` | The lab order contains the type of test to be performed. |
+| `ClinicalAnalysisLaboratory` | is the collection laboratory for | `RegisteredTest` | The collection date and laboratory are associated with the test. |
+| `TestType` | defines | `TestTypeParameter` | A test type is characterized by the parameter or parameters it measures. |
+| `TestTypeParameter` | identifies | `Parameter` | The association identifies a parameter measured by that test type. |
+| `RegisteredTest` | specifies | `TestTypeParameter` | The lab order contains the parameters to be measured for the test. |
+| `Parameter` | has | `ReferenceRange` | A parameter may have minimum and maximum reference values. |
+| `RegisteredTest` | has | `Sample` | The sample is associated with the client and test. |
+| `MedicalLabTechnician` | records | `Sample` | Medical lab technicians collect samples and record them in the system. |
+| `Courier` | delivers | `Sample` | Samples are delivered by courier to the chemical laboratory. |
+| `Sample` | is analyzed in | `ChemicalAnalysis` | Chemical analyses are performed on samples delivered to the headquarters. |
+| `ChemicalLaboratory` | hosts | `ChemicalAnalysis` | Chemical analyses are performed at the central chemical laboratory. |
+| `ClinicalChemistryTechnologist` | performs | `ChemicalAnalysis` | The technologist performs chemical analyses and records their results. |
+| `ChemicalAnalysis` | records | `ParameterResult` | The technologist records the value and analysis date and time for each parameter. |
+| `ParameterResult` | is for | `Parameter` | Each recorded value is for a parameter measured in the analysis. |
+| `RegisteredTest` | results in | `Report` | A specialist doctor prepares a report after examining the analysis results. |
+| `Report` | contains | `Diagnosis` | The report contains the diagnosis made by the specialist doctor. |
+| `Report` | presents | `ParameterResult` | The report makes the analysis results available to the client. |
+| `SpecialistDoctor` | prepares | `Report` | The specialist doctor examines the results, makes a diagnosis, and writes a report. |
+| `Client` | receives | `Notification` | The client receives a notification when the results are available. |
+| `Notification` | concerns | `Report` | The notification informs the client that the results and report are available. |
+| `Administrator` | manages | Core catalog information | Administrators manage test types, parameters, laboratories, and employees. |
 
-## 4. Multiplicity decisions and assumptions
+## 4. Multiplicities
 
-- **`Client "1" -- "0..*" LabOrder`**: a client can be registered before any lab order has been recorded. Each modeled lab order belongs to one client.
-- **`Client "1" -- "0..*" RegisteredTest`**: a client may have no registered tests yet, or many over time; each test concerns one client.
-- **`LabOrder "1" -- "1" RegisteredTest`**: **assumption** for the initial model: one lab order corresponds to one registered test. The assignment refers to the prescribed test type in the singular; support for multi-test lab orders would require clarification.
-- **`RegisteredTest "0..*" -- "1" TestType`**: a catalogue test type may exist without any registered tests, but each registered test has one defined type.
-- **`TestType "0..*" -- "1..*" Parameter`**: every test type involves at least one parameter; **assumption**: parameters can be reused across test types and can be registered before any type uses them.
-- **`RegisteredTest "1" -- "0..*" Sample`**: tests can exist before sample collection; each collected sample is associated with one registered test.
-- **`Sample "1" -- "0..*" ChemicalAnalysis`**: **assumption**: an already collected sample can be reanalyzed, for example for verification; the assignment does not explicitly require repeated analyses.
-- **`RegisteredTest "1" -- "0..1" Report`**: the report does not exist until a specialist doctor prepares it; the initial model supports one report per registered test.
-- **`Parameter "1" -- "0..1" ReferenceRange`**: reference values are optional, as explicitly stated in the assignment.
-- **`Courier "0..1" -- "0..*" Sample`**: **assumption**: courier assignment is optional before shipment, and at most one courier is recorded for each sample; the assignment does not explicitly require tracking courier assignments.
-- **Administrator relationships** denote management responsibility only, not exclusive ownership by a specific administrator. They are therefore modeled with optional many-to-many multiplicities.
+- **`Client "1" -- "0..*" LabOrder`**: each lab order belongs to exactly one client. A client may have no lab orders or multiple lab orders.
+- **`Client "1" -- "0..*" RegisteredTest`**: each registered test is for exactly one client. A client may have no registered tests or multiple registered tests.
+- **`LabOrder "1" -- "1" RegisteredTest`**: each registered test corresponds to exactly one lab order, and each lab order corresponds to exactly one registered test.
+- **`RegisteredTest "0..*" -- "1" TestType`**: each registered test has exactly one test type. A test type may be associated with no registered tests or multiple registered tests.
+- **`Receptionist "1" -- "0..*" RegisteredTest`**: each registered test is registered by exactly one receptionist. A receptionist may register no tests or multiple tests.
+- **`ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest`**: each registered test has exactly one sample collection laboratory. A laboratory may be associated with no registered tests or multiple registered tests.
+- **`TestType "1" -- "1..*" TestTypeParameter`**: each `TestTypeParameter` belongs to exactly one test type. Each test type has one or more `TestTypeParameter` associations.
+- **`TestTypeParameter "0..*" -- "1" Parameter`**: each `TestTypeParameter` identifies exactly one parameter. A parameter may be associated with no test types or with multiple test types.
+- **`RegisteredTest "0..*" -- "1..*" TestTypeParameter`**: each registered test specifies one or more `TestTypeParameter` associations. Each association may be specified by no registered tests or by multiple registered tests.
+- **`RegisteredTest "1" -- "0..*" Sample`**: each sample belongs to exactly one registered test. A registered test may have no samples or multiple samples.
+- **`MedicalLabTechnician "1" -- "0..*" Sample`**: each sample is recorded by exactly one medical lab technician. A technician may record no samples or multiple samples.
+- **`Courier "1" -- "0..*" Sample`**: each sample is transported by exactly one courier. A courier may transport no samples or multiple samples.
+- **`Sample "1" -- "0..*" ChemicalAnalysis`**: each chemical analysis is performed on exactly one sample. A sample may have no analyses or multiple analyses.
+- **`ChemicalLaboratory "1" -- "0..*" ChemicalAnalysis`**: each chemical analysis takes place in exactly one chemical laboratory. A chemical laboratory may host no analyses or multiple analyses.
+- **`ClinicalChemistryTechnologist "1" -- "0..*" ChemicalAnalysis`**: each chemical analysis is performed by exactly one technologist. A technologist may perform no analyses or multiple analyses.
+- **`ChemicalAnalysis "1" -- "1..*" ParameterResult`**: each parameter result belongs to exactly one chemical analysis. A chemical analysis records one or more parameter results.
+- **`Parameter "1" -- "0..*" ParameterResult`**: each parameter result is for exactly one parameter. A parameter may have no results or multiple results.
+- **`RegisteredTest "1" -- "0..1" Report`**: each report is for exactly one registered test. A registered test may have no report yet or one report.
+- **`Report "1" -- "1" Diagnosis`**: each report contains exactly one diagnosis, and each diagnosis belongs to exactly one report.
+- **`Report "1" -- "1..*" ParameterResult`**: each parameter result is presented in exactly one report. A report presents one or more parameter results.
+- **`SpecialistDoctor "1" -- "0..*" Report`**: each report is prepared by exactly one specialist doctor. A specialist doctor may prepare no reports or multiple reports.
+- **`Client "1" -- "0..*" Notification`**: each notification is received by exactly one client. A client may receive no notifications or multiple notifications.
+- **`Notification "0..*" -- "1" Report`**: each notification concerns exactly one report. A report may be associated with no notifications or multiple notifications.
+- **`Parameter "1" -- "0..1" ReferenceRange`**: each reference range belongs to exactly one parameter. A parameter may have no reference range or one reference range.
+- **`Administrator "0..*" -- "0..*" TestType`**: an administrator may manage no test types or multiple test types. A test type may be managed by no administrators or multiple administrators.
+- **`Administrator "0..*" -- "0..*" Parameter`**: an administrator may manage no parameters or multiple parameters. A parameter may be managed by no administrators or multiple administrators.
+- **`Administrator "0..*" -- "0..*" ClinicalAnalysisLaboratory`**: an administrator may manage no laboratories or multiple laboratories. A laboratory may be managed by no administrators or multiple administrators.
+
+The multiplicities describe the number of instances at each end of an association; `0..*` means none or any number, `0..1` means optional, and `1..*` means one or more.
 
 ### Business rule not expressed by a class association alone
 

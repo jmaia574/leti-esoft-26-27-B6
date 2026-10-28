@@ -25,12 +25,12 @@ This section specifies functionality shared across multiple use cases, covering 
 
 | ID | Requirement | Origin |
 |:---|:---|:---|
-| FUN-01 | All system users (Staff Members and Clients) shall be authenticated before accessing the application. Authentication may be simulated during the prototype stage. | Specified |
+| FUN-01 | All system users shall be authenticated before accessing the application. Authentication may be simulated during the prototype stage. | Specified |
 | FUN-02 | The system shall prevent clients from accessing analysis results until the specialist doctor has prepared and validated the diagnostic report (`Report`). | Specified |
 | FUN-03 | Following the completion of the diagnostic report by the specialist doctor, the system shall automatically notify the client via SMS and/or email that the results and report are available. | Specified |
 | FUN-04 | The system shall support sorting clinical analysis results by the client's Tax Identification Number (`taxIdentificationNumber` / TIF) or by the client's name. | Specified |
-| FUN-05 | The system shall maintain consistent associations across the complete analysis lifecycle: `Client`, `LabOrder`, `RegisteredTest`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`. | Derived |
-| FUN-06 | The system should enforce role-based access control corresponding to the responsibilities of each `Staff Member` specialization (Administrator, Receptionist, Medical Lab Technician, Clinical Chemistry Technologist, Specialist Doctor) and `Client`. | Proposed |
+| FUN-05 | The system shall maintain consistent associations across the complete analysis lifecycle: `Client`, `LabOrder`, `RegisteredTest`, `TestTypeParameter`, `Parameter`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`. | Derived |
+| FUN-06 | The system should enforce role-based access control corresponding to the responsibilities of each user role. | Proposed |
 | FUN-07 | The system should prevent clients from accessing another client's private clinical and personal information. | Proposed |
 | FUN-08 | The system should maintain an audit trail of critical clinical operations, recording the responsible employee, operation type, and exact timestamp. | Proposed |
 
@@ -40,7 +40,7 @@ Clinical records are strictly confidential and must be protected against unautho
 
 The system distinguishes authentication from authorization:
 - **Authentication:** Verifies the user's identity (simulated during the prototype stage).
-- **Authorization:** Restricts system operations according to the user's role (enforcing the hierarchy defined for `Staff Member` actors).
+- **Authorization:** Restricts system operations according to the user's role.
 
 ### 2.2 Functional Traceability
 
@@ -77,7 +77,7 @@ Reliability is critical because the system manages sensitive clinical records an
 | REL-01 | The system shall ensure that no data is lost in the event of an unexpected failure or abnormal termination. | Specified |
 | REL-02 | The overall annual system availability shall exceed 99%. | Specified |
 | REL-03 | Persistence operations should be transactional, ensuring that no partially inconsistent records remain after a failure. | Derived |
-| REL-04 | The system should validate referential integrity between related entities (`RegisteredTest`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`). | Derived |
+| REL-04 | The system should validate referential integrity between related entities (`RegisteredTest`, `TestTypeParameter`, `Parameter`, `Sample`, `ChemicalAnalysis`, `ParameterResult`, and `Report`). | Derived |
 | REL-05 | The system should detect and report communication failures with external services (such as the Barcode Generation API or notification gateways). | Proposed |
 | REL-06 | The system should provide recovery mechanisms that preserve previously committed transactional data upon reboot. | Proposed |
 

@@ -1,6 +1,6 @@
 @startuml
 ' UKLabsMS - Sprint 1 conceptual domain model
-' Multiplicities and modeling assumptions are justified in analysis.md.
+' Multiplicities are explained in analysis.md.
 title UKLabsMS - Domain Model
 
 hide methods
@@ -55,6 +55,8 @@ class Parameter {
     metric
 }
 
+class TestTypeParameter
+
 class ReferenceRange {
     minimum
     maximum
@@ -80,23 +82,24 @@ Client "1" -- "0..*" LabOrder : submits >
 Client "1" -- "0..*" RegisteredTest : is associated with >
 Receptionist "1" -- "0..*" RegisteredTest : registers >
 
-' Current simplifying assumption: one registered test per lab order
+' Each lab order corresponds to its registered test.
 LabOrder "1" -- "1" RegisteredTest : corresponds to >
 RegisteredTest "0..*" -- "1" TestType : is classified as >
 ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest : collects samples for >
 
-' Assumption: parameters can be reused across test types;
-' a catalogued parameter may exist before being assigned to a test type.
-TestType "0..*" -- "1..*" Parameter : measures >
+' TestTypeParameter is the intermediary for the many-to-many relationship.
+TestType "1" -- "1..*" TestTypeParameter : defines >
+TestTypeParameter "0..*" -- "1" Parameter : identifies >
+' A registered test records the parameters specified in its lab order.
+RegisteredTest "0..*" -- "1..*" TestTypeParameter : specifies >
 Parameter "1" -- "0..1" ReferenceRange : has >
 
 ' Registered tests may exist before any sample is collected.
 RegisteredTest "1" -- "0..*" Sample : has >
 MedicalLabTechnician "1" -- "0..*" Sample : registers >
-' Optional until transported; courier tracking is a modeling assumption.
-Courier "0..1" -- "0..*" Sample : transports >
+' Each sample is delivered by a courier.
+Courier "1" -- "0..*" Sample : transports >
 
-' Assumption: the same sample may be analyzed more than once.
 Sample "1" -- "0..*" ChemicalAnalysis : undergoes >
 ChemicalLaboratory "1" -- "0..*" ChemicalAnalysis : hosts >
 ClinicalChemistryTechnologist "1" -- "0..*" ChemicalAnalysis : performs >

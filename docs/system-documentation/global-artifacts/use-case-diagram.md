@@ -17,8 +17,8 @@ The use cases represent the system's initial functional scope and may be refined
 
 | Actor                           | Description |
 |:--------------------------------|:---|
-| Staff Member                    | Generalized actor representing UK Labs employees who interact with the system. |
-| Administrator                   | Manages the core information necessary for the system's operation. |
+| Staff Member                    | Generalized actor representing operational UK Labs staff who interact with the system. |
+| Administrator                   | Separate actor who manages the core information necessary for the system's operation. |
 | Receptionist                    | Registers clients and prescribed clinical tests. |
 | Medical Lab Technician          | Collects biological samples and records them in the system. |
 | Clinical Chemistry Technologist | Performs chemical analyses and records the obtained results. |
@@ -46,9 +46,10 @@ The use cases represent the system's initial functional scope and may be refined
 
 ### Actor Generalization
 
-The Administrator, Receptionist, Medical Lab Technician,
-Clinical Chemistry Technologist, and Specialist Doctor are
-specializations of the Staff Member actor.
+The Receptionist, Medical Lab Technician, Clinical Chemistry
+Technologist, and Specialist Doctor are specializations of the
+Staff Member actor. The Administrator is a separate actor, not a
+Staff Member, and authenticates independently.
 
 This generalization represents their shared role as
 UK Labs employees while preserving their specific
