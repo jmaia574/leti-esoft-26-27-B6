@@ -1,0 +1,253 @@
+//
+// US11 - Register Parameter
+// Unit Tests - LETI-ESOFT 2026/2027 - Team B6
+//
+
+#include <gtest/gtest.h>
+
+#include "domain/parameter/Parameter.h"
+#include "domain/parameter/ParameterRepository.h"
+#include "domain/parameter/RegisterParameter.h"
+
+#include <stdexcept>
+
+// =====================================================
+// AC11-1: Parameter code validation
+// =====================================================
+
+TEST(ParameterTests, AcceptsValidAlphanumericCode) {
+    EXPECT_TRUE(Parameter::isValidCode(L"RBC01"));
+    EXPECT_TRUE(Parameter::isValidCode(L"12345"));
+    EXPECT_TRUE(Parameter::isValidCode(L"ABCDE"));
+}
+
+TEST(ParameterTests, RejectsCodeWithLessThanFiveCharacters) {
+    EXPECT_FALSE(Parameter::isValidCode(L"ABC1"));
+}
+
+TEST(ParameterTests, RejectsCodeWithMoreThanFiveCharacters) {
+    EXPECT_FALSE(Parameter::isValidCode(L"ABC123"));
+}
+
+TEST(ParameterTests, RejectsNonAlphanumericCharacters) {
+    EXPECT_FALSE(Parameter::isValidCode(L"AB@12"));
+    EXPECT_FALSE(Parameter::isValidCode(L"AB 12"));
+    EXPECT_FALSE(Parameter::isValidCode(L"AB-12"));
+}
+
+TEST(ParameterTests, RejectsEmptyCode) {
+    EXPECT_FALSE(Parameter::isValidCode(L""));
+}
+
+// =====================================================
+// AC11-2: Reference values and numeric metrics
+// =====================================================
+
+TEST(ParameterTests, AcceptsNumericMetricWithReferenceValues) {
+    EXPECT_NO_THROW({
+        Parameter parameter(
+            L"RBC01",
+            L"Red Blood Cells",
+            L"Red blood cell count",
+            L"10^12/L",
+            4.2,
+            5.9
+        );
+    });
+}
+
+TEST(ParameterTests, AcceptsNonNumericMetricWithoutReferenceValues) {
+    EXPECT_NO_THROW({
+        Parameter parameter(
+            L"COV01",
+            L"COVID-19",
+            L"COVID-19 test result",
+            L"Positive/Negative"
+        );
+    });
+}
+
+TEST(ParameterTests, RejectsNonNumericMetricWithReferenceValues) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"COV01",
+            L"COVID-19",
+            L"COVID-19 test result",
+            L"Positive/Negative",
+            0.0,
+            1.0
+        );
+    }, std::invalid_argument);
+}
+
+TEST(ParameterTests, RejectsInvalidReferenceRange) {
+    EXPECT_FALSE(
+        Parameter::isValidReferenceRange(10.0, 5.0)
+    );
+}
+
+TEST(ParameterTests, AcceptsValidReferenceRange) {
+    EXPECT_TRUE(
+        Parameter::isValidReferenceRange(4.2, 5.9)
+    );
+}
+
+// =====================================================
+// Additional acceptance criteria: Mandatory fields
+// =====================================================
+
+TEST(ParameterTests, RejectsEmptyName) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"RBC01",
+            L"",
+            L"Red blood cell count",
+            L"10^12/L"
+        );
+    }, std::invalid_argument);
+}
+
+TEST(ParameterTests, RejectsEmptyDescription) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"RBC01",
+            L"Red Blood Cells",
+            L"",
+            L"10^12/L"
+        );
+    }, std::invalid_argument);
+}
+
+TEST(ParameterTests, RejectsEmptyMetric) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"RBC01",
+            L"Red Blood Cells",
+            L"Red blood cell count",
+            L""
+        );
+    }, std::invalid_argument);
+}
+
+// =====================================================
+// Repository tests: Code uniqueness
+// =====================================================
+
+TEST(ParameterRepositoryTests, AddsValidParameter) {
+    ParameterRepository repository;
+
+    Parameter parameter(
+        L"RBC01",
+        L"Red Blood Cells",
+        L"Red blood cell count",
+        L"10^12/L"
+    );
+
+    EXPECT_TRUE(repository.add(parameter));
+    EXPECT_EQ(repository.count(), 1);
+}
+
+TEST(ParameterRepositoryTests, RejectsDuplicateCode) {
+    ParameterRepository repository;
+
+    Parameter first(
+        L"RBC01",
+        L"Red Blood Cells",
+        L"Red blood cell count",
+        L"10^12/L"
+    );
+
+    Parameter second(
+        L"RBC01",
+        L"Another Parameter",
+        L"Different description",
+        L"mg/dL"
+    );
+
+    EXPECT_TRUE(repository.add(first));
+    EXPECT_FALSE(repository.add(second));
+
+    EXPECT_EQ(repository.count(), 1);
+}
+
+TEST(ParameterRepositoryTests, FindsExistingParameter) {
+    ParameterRepository repository;
+
+    Parameter parameter(
+        L"RBC01",
+        L"Red Blood Cells",
+        L"Red blood cell count",
+        L"10^12/L"
+    );
+
+    repository.add(parameter);
+
+    const Parameter* found = repository.findByCode(L"RBC01");
+
+    ASSERT_NE(found, nullptr);
+    EXPECT_EQ(found->getName(), L"Red Blood Cells");
+}
+
+TEST(ParameterRepositoryTests, ReturnsNullForUnknownCode) {
+    ParameterRepository repository;
+
+    EXPECT_EQ(repository.findByCode(L"XXXXX"), nullptr);
+}
+
+// =====================================================
+// US11: Register Parameter
+// =====================================================
+
+TEST(RegisterParameterTests, RegistersValidParameter) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    bool result = service.execute(
+        L"RBC01",
+        L"Red Blood Cells",
+        L"Red blood cell count",
+        L"10^12/L",
+        4.2,
+        5.9
+    );
+
+    EXPECT_TRUE(result);
+    EXPECT_EQ(repository.count(), 1);
+}
+
+TEST(RegisterParameterTests, RejectsDuplicateRegistration) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_TRUE(service.execute(
+        L"RBC01",
+        L"Red Blood Cells",
+        L"Red blood cell count",
+        L"10^12/L"
+    ));
+
+    EXPECT_FALSE(service.execute(
+        L"RBC01",
+        L"Another Parameter",
+        L"Different description",
+        L"mg/dL"
+    ));
+
+    EXPECT_EQ(repository.count(), 1);
+}
+
+TEST(RegisterParameterTests, DoesNotStoreInvalidParameter) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_THROW({
+        service.execute(
+            L"AB12",
+            L"Invalid Parameter",
+            L"Invalid code length",
+            L"mg/dL"
+        );
+    }, std::invalid_argument);
+
+    EXPECT_EQ(repository.count(), 0);
+}

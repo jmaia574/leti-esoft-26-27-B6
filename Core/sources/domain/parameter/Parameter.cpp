@@ -1,17 +1,25 @@
+//
+// Parameter.cpp
+// US11 - Register Parameter
+// LETI-ESOFT 2026/2027 - Team B6
+//
+
 #include "domain/parameter/Parameter.h"
 
 #include <algorithm>
-#include <cwctype>
-#include <stdexcept>
-#include <utility>
 #include <cmath>
+#include <stdexcept>
 
-// Constructor
+// =====================================================
+// Constructor with explicit metric classification
+// =====================================================
+
 Parameter::Parameter(
     const std::wstring& code,
     const std::wstring& name,
     const std::wstring& description,
     const std::wstring& metric,
+    MetricType metricType,
     std::optional<double> minimumReferenceValue,
     std::optional<double> maximumReferenceValue
 )
@@ -19,21 +27,25 @@ Parameter::Parameter(
       name(name),
       description(description),
       metric(metric),
+      metricType(metricType),
       minimumReferenceValue(minimumReferenceValue),
       maximumReferenceValue(maximumReferenceValue)
 {
+    // AC11-1: Code must contain exactly five alphanumeric characters.
     if (!isValidCode(code)) {
         throw std::invalid_argument(
             "Parameter code must contain exactly five alphanumeric characters."
         );
     }
 
+    // Validate mandatory fields.
     if (name.empty() || description.empty() || metric.empty()) {
         throw std::invalid_argument(
             "Parameter name, description and metric are required."
         );
     }
 
+    // Validate reference range.
     if (!isValidReferenceRange(
             minimumReferenceValue,
             maximumReferenceValue)) {
@@ -42,16 +54,46 @@ Parameter::Parameter(
         );
     }
 
+    // AC11-2: Reference values are only applicable to numeric metrics.
     if ((minimumReferenceValue.has_value() ||
          maximumReferenceValue.has_value()) &&
-        !isNumericMetric(metric)) {
+        metricType != MetricType::Numeric) {
         throw std::invalid_argument(
             "Reference values are only applicable to numeric metrics."
         );
     }
 }
 
+// =====================================================
+// Legacy constructor - Compatibility with existing code
+// =====================================================
+
+Parameter::Parameter(
+    const std::wstring& code,
+    const std::wstring& name,
+    const std::wstring& description,
+    const std::wstring& metric,
+    std::optional<double> minimumReferenceValue,
+    std::optional<double> maximumReferenceValue
+)
+    : Parameter(
+        code,
+        name,
+        description,
+        metric,
+        isNumericMetric(metric)
+            ? MetricType::Numeric
+            : MetricType::Qualitative,
+        minimumReferenceValue,
+        maximumReferenceValue
+    )
+{
+}
+
+// =====================================================
 // Getters
+// =====================================================
+
 const std::wstring& Parameter::getCode() const {
     return code;
 }
@@ -68,6 +110,10 @@ const std::wstring& Parameter::getMetric() const {
     return metric;
 }
 
+MetricType Parameter::getMetricType() const {
+    return metricType;
+}
+
 std::optional<double> Parameter::getMinimumReferenceValue() const {
     return minimumReferenceValue;
 }
@@ -76,7 +122,10 @@ std::optional<double> Parameter::getMaximumReferenceValue() const {
     return maximumReferenceValue;
 }
 
-// Code validation
+// =====================================================
+// AC11-1: Code validation
+// =====================================================
+
 bool Parameter::isValidCode(const std::wstring& code) {
     if (code.length() != 5) {
         return false;
@@ -93,10 +142,14 @@ bool Parameter::isValidCode(const std::wstring& code) {
     );
 }
 
-// Numeric metric validation
+// =====================================================
+// Legacy metric classification
+// =====================================================
+
 bool Parameter::isNumericMetric(const std::wstring& metric) {
-    // Provisional classification.
-    // Must be validated against the supported metric catalog.
+
+    // Temporary compatibility with existing registrations.
+    // New registrations should use explicit MetricType.
 
     static const std::wstring numericMetrics[] = {
         L"g/dL",
@@ -104,7 +157,13 @@ bool Parameter::isNumericMetric(const std::wstring& metric) {
         L"U/L",
         L"10^12/L",
         L"10^9/L",
-        L"mmol/L"
+        L"mmol/L",
+        L"mg/L",
+        L"g/L",
+        L"ng/mL",
+        L"pg/mL",
+        L"mEq/L",
+        L"cells/uL"
     };
 
     return std::find(
@@ -114,7 +173,10 @@ bool Parameter::isNumericMetric(const std::wstring& metric) {
     ) != std::end(numericMetrics);
 }
 
+// =====================================================
 // Reference range validation
+// =====================================================
+
 bool Parameter::isValidReferenceRange(
     std::optional<double> minimum,
     std::optional<double> maximum

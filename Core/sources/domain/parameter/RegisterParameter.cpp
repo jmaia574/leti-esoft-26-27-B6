@@ -6,11 +6,47 @@
 
 #include "domain/parameter/RegisterParameter.h"
 
-#include <stdexcept>
-
+// Constructor
 RegisterParameter::RegisterParameter(ParameterRepository& repository)
     : repository(repository) {
 }
+
+// =====================================================
+// Register parameter with explicit metric classification
+// =====================================================
+
+bool RegisterParameter::execute(
+    const std::wstring& code,
+    const std::wstring& name,
+    const std::wstring& description,
+    const std::wstring& metric,
+    MetricType metricType,
+    std::optional<double> minimumReferenceValue,
+    std::optional<double> maximumReferenceValue
+) {
+    // Create and validate the parameter.
+    Parameter parameter(
+        code,
+        name,
+        description,
+        metric,
+        metricType,
+        minimumReferenceValue,
+        maximumReferenceValue
+    );
+
+    // AC11-1: Parameter code must be unique.
+    if (repository.existsByCode(parameter.getCode())) {
+        return false;
+    }
+
+    // Store the parameter.
+    return repository.add(parameter);
+}
+
+// =====================================================
+// Legacy method - Temporary compatibility
+// =====================================================
 
 bool RegisterParameter::execute(
     const std::wstring& code,
@@ -20,21 +56,17 @@ bool RegisterParameter::execute(
     std::optional<double> minimumReferenceValue,
     std::optional<double> maximumReferenceValue
 ) {
-    // Create the parameter and validate its attributes.
-    Parameter parameter(
+    // Preserve existing behaviour until all callers
+    // use explicit metric classification.
+    return execute(
         code,
         name,
         description,
         metric,
+        Parameter::isNumericMetric(metric)
+            ? MetricType::Numeric
+            : MetricType::Qualitative,
         minimumReferenceValue,
         maximumReferenceValue
     );
-
-    // Check whether the parameter code is already registered.
-    if (repository.existsByCode(parameter.getCode())) {
-        return false;
-    }
-
-    // Store the parameter in the repository.
-    return repository.add(parameter);
 }
