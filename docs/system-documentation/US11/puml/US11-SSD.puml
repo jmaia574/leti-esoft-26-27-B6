@@ -17,7 +17,7 @@ participant "UKLabsMS" as System
 Admin -> System : requestParameterRegistration()
 System --> Admin : requestParameterDetails()
 
-Admin -> System : submitParameterDetails(code, name,\ndescription, metric, referenceValues)
+Admin -> System : submitParameterDetails(code, name,\ndescription, metric, metricType, referenceValues)
 
 activate System
 
@@ -27,7 +27,7 @@ else Invalid code format
     System --> Admin : displayValidationError()
 else Duplicate parameter code
     System --> Admin : displayDuplicateCodeError()
-else Reference values incompatible with metric
+else Reference values incompatible with metric type
     System --> Admin : displayInvalidReferenceValuesError()
 else Other invalid information
     System --> Admin : displayRegistrationError()
@@ -44,6 +44,9 @@ and must be unique.
 AC11-2:
 Reference values are only
 applicable to numeric metrics.
+
+Metric classification:
+Numeric or Qualitative.
 end note
 
 @enduml

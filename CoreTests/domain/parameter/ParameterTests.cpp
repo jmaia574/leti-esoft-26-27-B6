@@ -251,3 +251,124 @@ TEST(RegisterParameterTests, DoesNotStoreInvalidParameter) {
 
     EXPECT_EQ(repository.count(), 0);
 }
+
+// =====================================================
+// AC11-2: Explicit MetricType classification
+// =====================================================
+
+TEST(ParameterTests, AcceptsNewNumericUnitWithExplicitClassification) {
+    EXPECT_NO_THROW({
+        Parameter parameter(
+            L"GLU01",
+            L"Glucose",
+            L"Blood glucose concentration",
+            L"mg/100mL",
+            MetricType::Numeric,
+            70.0,
+            100.0
+        );
+    });
+}
+
+TEST(ParameterTests, ReturnsNumericMetricType) {
+    Parameter parameter(
+        L"GLU01",
+        L"Glucose",
+        L"Blood glucose concentration",
+        L"mg/100mL",
+        MetricType::Numeric,
+        70.0,
+        100.0
+    );
+
+    EXPECT_EQ(parameter.getMetricType(), MetricType::Numeric);
+}
+
+TEST(ParameterTests, ReturnsQualitativeMetricType) {
+    Parameter parameter(
+        L"COV01",
+        L"COVID-19 Result",
+        L"COVID-19 test result",
+        L"Positive/Negative",
+        MetricType::Qualitative
+    );
+
+    EXPECT_EQ(parameter.getMetricType(), MetricType::Qualitative);
+    EXPECT_FALSE(parameter.getMinimumReferenceValue().has_value());
+    EXPECT_FALSE(parameter.getMaximumReferenceValue().has_value());
+}
+
+TEST(ParameterTests, RejectsQualitativeMetricWithReferenceValues) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"COV02",
+            L"COVID-19 Result",
+            L"COVID-19 test result",
+            L"Positive/Negative",
+            MetricType::Qualitative,
+            0.0,
+            1.0
+        );
+    }, std::invalid_argument);
+}
+
+TEST(RegisterParameterTests, RegistersExplicitNumericMetricWithNewUnit) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_TRUE(service.execute(
+        L"GLU01",
+        L"Glucose",
+        L"Blood glucose concentration",
+        L"mg/100mL",
+        MetricType::Numeric,
+        70.0,
+        100.0
+    ));
+
+    EXPECT_EQ(repository.count(), 1);
+
+    const Parameter* parameter = repository.findByCode(L"GLU01");
+
+    ASSERT_NE(parameter, nullptr);
+    EXPECT_EQ(parameter->getMetricType(), MetricType::Numeric);
+}
+
+TEST(RegisterParameterTests, RegistersExplicitQualitativeMetric) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_TRUE(service.execute(
+        L"COV01",
+        L"COVID-19 Result",
+        L"COVID-19 test result",
+        L"Positive/Negative",
+        MetricType::Qualitative
+    ));
+
+    EXPECT_EQ(repository.count(), 1);
+
+    const Parameter* parameter = repository.findByCode(L"COV01");
+
+    ASSERT_NE(parameter, nullptr);
+    EXPECT_EQ(parameter->getMetricType(), MetricType::Qualitative);
+}
+
+TEST(RegisterParameterTests, DoesNotStoreQualitativeMetricWithReferenceValues) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_THROW({
+        service.execute(
+            L"COV02",
+            L"COVID-19 Result",
+            L"COVID-19 test result",
+            L"Positive/Negative",
+            MetricType::Qualitative,
+            0.0,
+            1.0
+        );
+    }, std::invalid_argument);
+
+    EXPECT_EQ(repository.count(), 0);
+}

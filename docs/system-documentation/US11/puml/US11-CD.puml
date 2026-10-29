@@ -1,0 +1,71 @@
+@startuml
+title US11 - Register Parameter\nClass Diagram (CD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+
+enum MetricType {
+    Numeric
+    Qualitative
+}
+
+class Parameter {
+    - code : wstring
+    - name : wstring
+    - description : wstring
+    - metric : wstring
+    - metricType : MetricType
+    - minimumReferenceValue : optional<double>
+    - maximumReferenceValue : optional<double>
+    --
+    + Parameter(code, name, description, metric, metricType, minimum, maximum)
+    + Parameter(code, name, description, metric, minimum, maximum)
+    + getCode() : const wstring&
+    + getName() : const wstring&
+    + getDescription() : const wstring&
+    + getMetric() : const wstring&
+    + getMetricType() : MetricType
+    + getMinimumReferenceValue() : optional<double>
+    + getMaximumReferenceValue() : optional<double>
+    + {static} isValidCode(code) : bool
+    + {static} isNumericMetric(metric) : bool
+    + {static} isValidReferenceRange(minimum, maximum) : bool
+}
+
+class ParameterRepository {
+    - parameters : vector<Parameter>
+    --
+    + add(parameter) : bool
+    + findByCode(code) : const Parameter*
+    + existsByCode(code) : bool
+    + count() : size_t
+}
+
+class RegisterParameter {
+    - repository : ParameterRepository&
+    --
+    + RegisterParameter(repository)
+    + execute(code, name, description, metric, metricType, minimum, maximum) : bool
+    + execute(code, name, description, metric, minimum, maximum) : bool
+}
+
+Parameter --> MetricType : uses
+ParameterRepository "1" o-- "0..*" Parameter : stores
+RegisterParameter --> ParameterRepository : uses
+RegisterParameter ..> Parameter : creates
+
+note right of Parameter
+AC11-1:
+Code must contain exactly
+5 alphanumeric characters.
+
+AC11-2:
+Reference values are only
+allowed for numeric metrics.
+end note
+
+@enduml
