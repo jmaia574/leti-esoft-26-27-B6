@@ -1,0 +1,89 @@
+@startuml
+title US11 - Register Parameter\nSequence Diagram (SD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+
+participant "ConsoleApp" as UI
+participant "RegisterParameter" as Service
+participant "Parameter" as Parameter
+participant "ParameterRepository" as Repository
+
+== Request Parameter Registration ==
+
+Admin -> UI : selectRegisterParameter()
+activate UI
+
+UI --> Admin : requestParameterDetails()
+
+Admin -> UI : enterCode(code)
+Admin -> UI : enterName(name)
+Admin -> UI : enterDescription(description)
+Admin -> UI : enterMetric(metric)
+Admin -> UI : selectMetricType(metricType)
+Admin -> UI : enterReferenceValues(minimum, maximum)
+
+== Register Parameter ==
+
+UI -> Service : execute(code, name, description,\nmetric, metricType, minimum, maximum)
+activate Service
+
+create Parameter
+Service -> Parameter : new Parameter(code, name, description,\nmetric, metricType, minimum, maximum)
+activate Parameter
+
+Parameter -> Parameter : isValidCode(code)
+Parameter -> Parameter : isValidReferenceRange(minimum, maximum)
+
+alt Invalid parameter data
+    Parameter --> Service : invalid_argument
+    Service --> UI : invalid_argument
+    UI --> Admin : displayRegistrationError()
+else Valid parameter data
+    Parameter --> Service : parameter
+    deactivate Parameter
+
+    Service -> Repository : existsByCode(code)
+    activate Repository
+
+    Repository --> Service : exists
+    deactivate Repository
+
+    alt Parameter code already exists
+        Service --> UI : false
+        UI --> Admin : displayDuplicateCodeError()
+    else Parameter code is unique
+        Service -> Repository : add(parameter)
+        activate Repository
+
+        Repository --> Service : true
+        deactivate Repository
+
+        Service --> UI : true
+        UI --> Admin : displaySuccessMessage()
+    end
+end
+
+deactivate Service
+deactivate UI
+
+note right of Parameter
+AC11-1:
+Code must contain exactly
+5 alphanumeric characters.
+
+AC11-2:
+Reference values are only
+allowed for Numeric metrics.
+end note
+
+@enduml
