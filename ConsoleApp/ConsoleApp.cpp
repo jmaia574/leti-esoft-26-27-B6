@@ -2,6 +2,7 @@
 // ConsoleApp.cpp
 // UK Labs Management System
 // US11 - Register Parameter
+// US13 - List Employees by Role
 // LETI-ESOFT 2026/2027 - Team B6
 //
 
@@ -11,8 +12,15 @@
 #include <stdexcept>
 #include <sstream>
 #include <cmath>
+#include <vector>
 
 #include "domain/parameter/RegisterParameter.h"
+#include "domain/employee/EmployeeRepository.h"
+#include "domain/employee/ListEmployeesByRole.h"
+
+// =====================================================
+// Shared console utilities
+// =====================================================
 
 // Read a numeric value from the console.
 bool readDouble(const std::wstring& prompt, double& value) {
@@ -40,7 +48,10 @@ bool readDouble(const std::wstring& prompt, double& value) {
     return std::isfinite(value);
 }
 
+// =====================================================
 // US11 - Register Parameter
+// =====================================================
+
 void registerParameter(RegisterParameter& service) {
     std::wstring code;
     std::wstring name;
@@ -111,8 +122,8 @@ void registerParameter(RegisterParameter& service) {
         // AC11-2: Qualitative metrics cannot have reference values.
         if (metricType == MetricType::Qualitative) {
             std::wcout
-                << L"\nRegistration failed: Reference values are only "
-                << L"applicable to numeric metrics.\n";
+                    << L"\nRegistration failed: Reference values are only "
+                    << L"applicable to numeric metrics.\n";
             return;
         }
 
@@ -123,7 +134,7 @@ void registerParameter(RegisterParameter& service) {
                 L"Minimum reference value: ",
                 minValue)) {
             std::wcout
-                << L"Invalid minimum reference value.\n";
+                    << L"Invalid minimum reference value.\n";
             return;
         }
 
@@ -131,7 +142,7 @@ void registerParameter(RegisterParameter& service) {
                 L"Maximum reference value: ",
                 maxValue)) {
             std::wcout
-                << L"Invalid maximum reference value.\n";
+                    << L"Invalid maximum reference value.\n";
             return;
         }
 
@@ -146,26 +157,26 @@ void registerParameter(RegisterParameter& service) {
     // Register parameter
     try {
         bool success = service.execute(
-            code,
-            name,
-            description,
-            metric,
-            metricType,
-            minimum,
-            maximum
+                code,
+                name,
+                description,
+                metric,
+                metricType,
+                minimum,
+                maximum
         );
 
         if (success) {
             std::wcout
-                << L"\nParameter registered successfully!\n";
+                    << L"\nParameter registered successfully!\n";
         } else {
             std::wcout
-                << L"\nError: Parameter code already exists.\n";
+                    << L"\nError: Parameter code already exists.\n";
         }
 
     } catch (const std::invalid_argument& exception) {
         std::wcout
-            << L"\nRegistration failed: ";
+                << L"\nRegistration failed: ";
 
         // Exception messages are ASCII in our domain validation.
         const std::string message = exception.what();
@@ -178,16 +189,69 @@ void registerParameter(RegisterParameter& service) {
     }
 }
 
+// =====================================================
+// US13 - List Employees by Role
+// =====================================================
+
+void listEmployeesByRole(const ListEmployeesByRole& service) {
+    std::wstring role;
+
+    std::wcout << L"\n===== US13 - LIST EMPLOYEES BY ROLE =====\n";
+
+    std::wcout << L"Enter employee role: ";
+
+    if (!std::getline(std::wcin, role)) {
+        return;
+    }
+
+    if (role.empty()) {
+        std::wcout << L"\nError: Employee role cannot be empty.\n";
+        return;
+    }
+
+    // Retrieve employees matching the selected role.
+    std::vector<Employee> employees = service.execute(role);
+
+    if (employees.empty()) {
+        std::wcout
+                << L"\nNo employees found for the selected role.\n";
+        return;
+    }
+
+    std::wcout << L"\n===== EMPLOYEES =====\n";
+    std::wcout << L"Role: " << role << L"\n";
+    std::wcout << L"Total employees: " << employees.size() << L"\n";
+
+    for (const Employee& employee : employees) {
+        std::wcout << L"\n-----------------------------\n";
+        std::wcout << L"Code: " << employee.getCode() << L"\n";
+        std::wcout << L"Name: " << employee.getName() << L"\n";
+        std::wcout << L"Role: " << employee.getRole() << L"\n";
+    }
+
+    std::wcout << L"-----------------------------\n";
+}
+
+// =====================================================
 // Main application
+// =====================================================
+
 int main() {
-    ParameterRepository repository;
-    RegisterParameter service(repository);
+
+    // US11 - Parameter registration
+    ParameterRepository parameterRepository;
+    RegisterParameter registerParameterService(parameterRepository);
+
+    // US13 - Employee consultation
+    EmployeeRepository employeeRepository;
+    ListEmployeesByRole listEmployeesService(employeeRepository);
 
     std::wstring option;
 
     do {
         std::wcout << L"\n========== UKLABSMS ==========\n";
         std::wcout << L"1 - Register Parameter (US11)\n";
+        std::wcout << L"2 - List Employees by Role (US13)\n";
         std::wcout << L"0 - Exit\n";
         std::wcout << L"Choose an option: ";
 
@@ -196,7 +260,10 @@ int main() {
         }
 
         if (option == L"1") {
-            registerParameter(service);
+            registerParameter(registerParameterService);
+
+        } else if (option == L"2") {
+            listEmployeesByRole(listEmployeesService);
 
         } else if (option == L"0") {
             std::wcout << L"Exiting application...\n";
