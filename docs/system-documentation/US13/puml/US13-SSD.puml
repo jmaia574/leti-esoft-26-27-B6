@@ -1,0 +1,50 @@
+@startuml
+title US13 - List Employees by Role\nSystem Sequence Diagram (SSD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+participant "UKLabsMS" as System
+
+== Request Employee List ==
+
+Admin -> System : requestEmployeesByRole()
+activate System
+
+System --> Admin : requestRole()
+
+Admin -> System : submitRole(role)
+
+alt Valid role and matching employees exist
+    System --> Admin : displayEmployees(employeeList, totalCount)
+else Valid role but no employees found
+    System --> Admin : displayNoEmployeesFound()
+else Empty role
+    System --> Admin : displayInvalidRoleError()
+end
+
+deactivate System
+
+note right of System
+US13 - List Employees by Role
+
+The Administrator selects a role.
+
+The system returns all employees
+matching the selected role.
+
+The operation is read-only.
+
+Exact role matching is currently
+case-sensitive.
+end note
+
+@enduml

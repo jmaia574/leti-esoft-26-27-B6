@@ -1,0 +1,82 @@
+@startuml
+title US13 - List Employees by Role\nSequence Diagram (SD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+
+participant "ConsoleApp" as UI
+participant "ListEmployeesByRole" as Service
+participant "EmployeeRepository" as Repository
+
+== Request Employee List ==
+
+Admin -> UI : selectListEmployeesByRole()
+activate UI
+
+UI --> Admin : requestRole()
+
+Admin -> UI : enterRole(role)
+
+alt Empty role
+    UI --> Admin : displayInvalidRoleError()
+
+else Valid role
+
+    == Retrieve Employees ==
+
+    UI -> Service : execute(role)
+    activate Service
+
+    Service -> Repository : findByRole(role)
+    activate Repository
+
+    loop For each registered employee
+        Repository -> Repository : compare employee.getRole() with role
+    end
+
+    Repository --> Service : vector<Employee>
+    deactivate Repository
+
+    Service --> UI : vector<Employee>
+    deactivate Service
+
+    alt Employees found
+        loop For each matching employee
+            UI --> Admin : displayEmployee(code, name, role)
+        end
+
+        UI --> Admin : displayTotalEmployees(count)
+
+    else No employees found
+        UI --> Admin : displayNoEmployeesFound()
+    end
+end
+
+deactivate UI
+
+note right of Service
+US13 - List Employees by Role
+
+The consultation is read-only.
+
+The service does not modify
+registered employee records.
+end note
+
+note right of Repository
+Employees are stored in memory.
+
+Role matching currently uses
+exact, case-sensitive comparison.
+end note
+
+@enduml

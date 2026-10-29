@@ -1,0 +1,58 @@
+@startuml
+title US13 - List Employees by Role\nClass Diagram (CD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+
+class Employee {
+    - code : wstring
+    - name : wstring
+    - role : wstring
+    --
+    + Employee(code, name, role)
+    + getCode() : const wstring&
+    + getName() : const wstring&
+    + getRole() : const wstring&
+}
+
+class EmployeeRepository {
+    - employees : vector<Employee>
+    --
+    + add(employee) : bool
+    + findByRole(role) : vector<Employee>
+    + existsByCode(code) : bool
+    + count() : size_t
+}
+
+class ListEmployeesByRole {
+    - repository : const EmployeeRepository&
+    --
+    + ListEmployeesByRole(repository)
+    + execute(role) : vector<Employee>
+}
+
+EmployeeRepository "1" o-- "0..*" Employee : stores
+
+ListEmployeesByRole --> EmployeeRepository : queries
+
+note right of ListEmployeesByRole
+US13 - List Employees by Role
+
+Returns employees matching
+the selected role.
+
+The operation is read-only.
+end note
+
+note bottom of EmployeeRepository
+Currently uses in-memory storage.
+
+Role comparison is exact
+and case-sensitive.
+end note
+
+@enduml
