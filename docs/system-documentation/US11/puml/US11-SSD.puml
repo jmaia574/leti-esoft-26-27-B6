@@ -1,0 +1,49 @@
+@startuml
+title US11 - Register Parameter\nSystem Sequence Diagram (SSD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+participant "UKLabsMS" as System
+
+Admin -> System : requestParameterRegistration()
+System --> Admin : requestParameterDetails()
+
+Admin -> System : submitParameterDetails(code, name,\ndescription, metric, referenceValues)
+
+activate System
+
+alt Valid information and unique code
+    System --> Admin : parameterRegisteredSuccessfully()
+else Invalid code format
+    System --> Admin : displayValidationError()
+else Duplicate parameter code
+    System --> Admin : displayDuplicateCodeError()
+else Reference values incompatible with metric
+    System --> Admin : displayInvalidReferenceValuesError()
+else Other invalid information
+    System --> Admin : displayRegistrationError()
+end
+
+deactivate System
+
+note right of System
+AC11-1:
+The code must have exactly
+five alphanumeric characters
+and must be unique.
+
+AC11-2:
+Reference values are only
+applicable to numeric metrics.
+end note
+
+@enduml
