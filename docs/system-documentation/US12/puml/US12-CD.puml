@@ -1,0 +1,63 @@
+@startuml
+title US12 - Register an Employee\nClass Diagram (CD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+class Employee {
+    - ID : int
+    - name : wstring
+    - phoneNumber : wstring
+    - emailAddress : wstring
+    - role : wstring
+    - doctorIndexNumber : optional<wstring>
+    --
++ execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : optional<int>    + getID() : int
+    + getName() : const wstring&
+    + getPhoneNumber() : const wstring&
+    + getEmailAddress() : const wstring&
+    + getRole() : const wstring&
+    + getDoctorIndexNumber() : const optional<wstring>&
+}
+
+class EmployeeRepository {
+    - employees : vector<Employee>
+    - nextID : int = 1
+    --
+    + add(employee) : bool
+    + getNextID() : int
+    + existsByID(ID) : bool
+    + existsByPhoneNumber(phoneNumber) : bool
+    + existsByEmailAddress(emailAddress) : bool
+    + findByRole(role) : vector<Employee>
+    + count() : size_t
+}
+
+class RegisterEmployee {
+    - repository : EmployeeRepository&
+    --
+    + RegisterEmployee(repository)
+    + execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : bool
+}
+
+EmployeeRepository "1" o-- "0..*" Employee : stores
+RegisterEmployee --> EmployeeRepository : uses
+RegisterEmployee ..> Employee : creates
+
+note bottom of Employee
+Doctor Index Number is mandatory
+when role is Specialist Doctor.
+end note
+
+note bottom of EmployeeRepository
+add checks ID and contact uniqueness.
+After a successful insertion,
+nextID is incremented.
+end note
+
+@enduml

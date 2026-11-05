@@ -11,16 +11,18 @@ skinparam ActorBorderColor #334155
 skinparam ArrowColor #475569
 skinparam NoteBackgroundColor #FFF9E6
 
-autoactivate on
-autonumber
 
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
 Admin -> System : requestTestTypeRegistration()
+activate System
 System --> Admin : requestTestTypeData()
-Admin -> System : submitTestTypeData(internalCode, nhsCode,\ncollectionMethodDescription)
+deactivate System
 
+
+Admin -> System : submitTestTypeData(internalCode, nhsCode,\ncollectionMethodDescription)
+activate System
 alt Internal Code does not contain exactly four digits
     System --> Admin : registrationRejected()
 else NHS Code is not five alphanumeric characters
@@ -33,6 +35,7 @@ else Codes are valid and unique
     System --> Admin : registrationSucceeded()
 end
 
+deactivate System
 note right of System
 AC10-1: Internal Code has exactly four digits.
 AC10-2: NHS Code has exactly five alphanumeric characters.

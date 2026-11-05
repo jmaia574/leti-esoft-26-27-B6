@@ -1,0 +1,77 @@
+@startuml
+title US12 - Register an Employee\nSequence Diagram (SD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+participant "ConsoleApp" as UI
+participant "RegisterEmployee" as Service
+participant "EmployeeRepository" as Repository
+
+Admin -> UI : Requests employee registration
+activate UI
+
+UI --> Admin : Displays available roles
+Admin -> UI : Selects a role
+
+UI --> Admin : Requests name, phone number and e-mail
+Admin -> UI : Submits employee information
+
+opt Selected role is Specialist Doctor
+    UI --> Admin : Requests Doctor Index Number
+    Admin -> UI : Submits Doctor Index Number
+end
+
+UI -> Service : execute(name, phoneNumber, emailAddress,\nrole, doctorIndexNumber)
+activate Service
+
+note right of Service
+Validates mandatory information,
+the selected role and, when required,
+the Doctor Index Number.
+end note
+
+Service -> Repository : existsByPhoneNumber(phoneNumber)
+activate Repository
+Repository --> Service : false
+deactivate Repository
+
+Service -> Repository : existsByEmailAddress(emailAddress)
+activate Repository
+Repository --> Service : false
+deactivate Repository
+
+Service -> Repository : getNextId()
+activate Repository
+Repository --> Service : ID
+deactivate Repository
+
+create participant "employee : Employee" as Employee
+Service -> Employee : Employee(ID, name, phoneNumber,\nemailAddress, role, doctorIndexNumber)
+
+Service -> Repository : add(employee)
+activate Repository
+
+note right of Repository
+Stores the employee and
+increments nextId.
+end note
+
+Repository --> Service : true
+deactivate Repository
+
+Service --> UI : ID
+deactivate Service
+
+UI --> Admin : Confirms employee registration\nand displays the assigned ID
+deactivate UI
+
+@enduml

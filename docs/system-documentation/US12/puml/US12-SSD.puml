@@ -1,0 +1,46 @@
+@startuml
+title US12 - Register an Employee\nSystem Sequence Diagram (SSD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+actor "Administrator" as Admin
+participant "UKLabsMS" as System
+
+Admin -> System : Requests employee registration
+
+System --> Admin : Returns available roles
+
+Admin -> System : Selects a Role
+
+System --> Admin : Requests mandatory employee information (name, phone number and e-mail)
+
+Admin -> System : Submits employee information
+
+opt Selected role is Specialist Doctor
+    System --> Admin : Requests "Doctor Index Number"
+    Admin -> System : Submits "Doctor Index Number"
+end
+
+System --> Admin : Confirms employee registration and displays the assigned ID
+
+note right of System
+AC12-1: Exactly one role per employee.
+AC12-2: Automatically generated
+sequential numeric ID, starting at 1.
+AC12-3: Name, phone number,
+and e-mail address are mandatory.
+AC12-4: Phone number and e-mail
+address are each unique.
+AC12-5: Specialist Doctors require
+a Doctor Index Number.
+end note
+
+@enduml
