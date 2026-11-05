@@ -1,0 +1,63 @@
+@startuml
+title US10 - Register a Test Type\nSequence Diagram (SD)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam ParticipantBorderColor #2563EB
+skinparam ParticipantBackgroundColor #EFF6FF
+skinparam ActorBorderColor #334155
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+
+autoactivate on
+autonumber
+
+actor "Administrator" as Admin
+participant "ConsoleApp" as UI
+participant "RegisterTestType" as Service
+participant "TestTypeRepository" as Repository
+participant "TestType" as TestType
+
+Admin -> UI : selectRegisterTestType()
+UI --> Admin : requestTestTypeData()
+Admin -> UI : enterTestTypeData(internalCode, nhsCode,\ncollectionMethodDescription)
+
+UI -> Service : execute(internalCode, nhsCode,\ncollectionMethodDescription)
+
+create TestType
+Service -> TestType : TestType(internalCode, nhsCode,\ncollectionMethodDescription)
+
+alt Invalid Internal Code or NHS Code
+    TestType --> Service : construction rejected
+    Service --> UI : registration failed
+    UI --> Admin : displayRegistrationFailure()
+else Both code formats are valid
+    TestType --> Service : testType
+    Service -> Repository : add(testType)
+    Repository -> Repository : check code uniqueness
+
+    alt Internal Code or NHS Code is already registered
+        Repository --> Service : false
+        Service --> UI : registration failed
+        UI --> Admin : displayRegistrationFailure()
+    else Both codes are unique
+        Repository --> Service : true\n(test type added)
+        Service --> UI : registration succeeded
+        UI --> Admin : displayRegistrationSuccess()
+    end
+end
+
+note right of TestType
+The constructor enforces the official format criteria:
+AC10-1: four-digit Internal Code.
+AC10-2: five alphanumeric NHS Code.
+end note
+
+note right of Repository
+The repository checks the official uniqueness criterion:
+AC10-3: both codes are unique among registered test types.
+end note
+
+@enduml
