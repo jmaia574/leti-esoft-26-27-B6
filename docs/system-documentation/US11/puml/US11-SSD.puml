@@ -1,4 +1,5 @@
 @startuml
+
 title US11 - Register Parameter\nSystem Sequence Diagram (SSD)
 
 skinparam backgroundColor #FFFFFF
@@ -14,31 +15,47 @@ skinparam NoteBackgroundColor #FFF9E6
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
-Admin -> System : requestParameterRegistration()
-System --> Admin : requestParameterDetails()
+' =====================================================
+' Main Success Scenario
+' =====================================================
 
-Admin -> System : submitParameterDetails(code, name,\ndescription, metric, metricType, referenceValues)
+Admin -> System : Requests parameter registration
 
-activate System
+System --> Admin : Requests parameter information
 
-alt Valid information and unique code
-    System --> Admin : parameterRegisteredSuccessfully()
-else Invalid code format
-    System --> Admin : displayValidationError()
-else Duplicate parameter code
-    System --> Admin : displayDuplicateCodeError()
-else Reference values incompatible with metric type
-    System --> Admin : displayInvalidReferenceValuesError()
-else Other invalid information
-    System --> Admin : displayRegistrationError()
+Admin -> System : Provides code, name, description\nand metric
+
+System --> Admin : Requests metric classification\n(1 - Numeric; 2 - Qualitative)
+
+Admin -> System : Selects metric classification\n(1 or 2)
+
+' =====================================================
+' Optional Reference Values
+' =====================================================
+
+opt Numeric metric (Option 1) and reference values requested
+
+    System --> Admin : Requests minimum and maximum\nreference values
+
+    Admin -> System : Provides minimum and maximum\nreference values
+
 end
 
-deactivate System
+' =====================================================
+' Successful Registration
+' =====================================================
+
+System --> Admin : Confirms successful parameter registration
+
+' =====================================================
+' Acceptance Criteria
+' =====================================================
 
 note right of System
 AC11-1:
-The code must have exactly
-five alphanumeric characters
+The parameter code must
+contain exactly five
+alphanumeric characters
 and must be unique.
 
 AC11-2:
@@ -46,7 +63,8 @@ Reference values are only
 applicable to numeric metrics.
 
 Metric classification:
-Numeric or Qualitative.
+1 - Numeric
+2 - Qualitative (Non-numeric)
 end note
 
 @enduml

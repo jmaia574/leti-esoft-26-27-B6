@@ -9,12 +9,12 @@ skinparam classBackgroundColor #EFF6FF
 skinparam ArrowColor #475569
 
 class Employee {
-    - code : wstring
+    - ID : wstring
     - name : wstring
     - role : wstring
     --
-    + Employee(code, name, role)
-    + getCode() : const wstring&
+    + Employee(ID, name, role)
+    + getID() : const wstring&
     + getName() : const wstring&
     + getRole() : const wstring&
 }
@@ -24,7 +24,7 @@ class EmployeeRepository {
     --
     + add(employee) : bool
     + findByRole(role) : vector<Employee>
-    + existsByCode(code) : bool
+    + existsByID(ID) : bool
     + count() : size_t
 }
 

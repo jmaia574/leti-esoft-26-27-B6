@@ -16,7 +16,7 @@ enum class MetricType {
 
 class Parameter {
 private:
-    std::wstring code;
+    std::wstring ID;
     std::wstring name;
     std::wstring description;
     std::wstring metric;
@@ -29,7 +29,7 @@ private:
 public:
     // Constructor with explicit metric classification
     Parameter(
-        const std::wstring& code,
+        const std::wstring& ID,
         const std::wstring& name,
         const std::wstring& description,
         const std::wstring& metric,
@@ -40,7 +40,7 @@ public:
 
     // Legacy constructor for compatibility with existing code
     Parameter(
-        const std::wstring& code,
+        const std::wstring& ID,
         const std::wstring& name,
         const std::wstring& description,
         const std::wstring& metric,
@@ -49,7 +49,7 @@ public:
     );
 
     // Getters
-    const std::wstring& getCode() const;
+    const std::wstring& getID() const;
     const std::wstring& getName() const;
     const std::wstring& getDescription() const;
     const std::wstring& getMetric() const;
@@ -60,7 +60,7 @@ public:
     std::optional<double> getMaximumReferenceValue() const;
 
     // Validation
-    static bool isValidCode(const std::wstring& code);
+    static bool isValidID(const std::wstring& ID);
 
     static bool isNumericMetric(const std::wstring& metric);
 

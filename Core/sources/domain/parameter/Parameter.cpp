@@ -55,12 +55,28 @@ Parameter::Parameter(
     }
 
     // AC11-2: Reference values are only applicable to numeric metrics.
-    if ((minimumReferenceValue.has_value() ||
-         maximumReferenceValue.has_value()) &&
-        metricType != MetricType::Numeric) {
-        throw std::invalid_argument(
-            "Reference values are only applicable to numeric metrics."
-        );
+    if (metricType == MetricType::Qualitative) {
+
+        if (minimumReferenceValue.has_value() ||
+            maximumReferenceValue.has_value()) {
+            throw std::invalid_argument(
+                "Reference values are only applicable to numeric metrics."
+            );
+        }
+
+    }
+
+    // Professor clarification:
+    // Numeric parameters must have both reference values.
+    if (metricType == MetricType::Numeric) {
+
+        if (!minimumReferenceValue.has_value() ||
+            !maximumReferenceValue.has_value()) {
+            throw std::invalid_argument(
+                "Numeric parameters require both minimum and maximum reference values."
+            );
+        }
+
     }
 }
 

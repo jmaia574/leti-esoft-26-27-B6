@@ -11,19 +11,19 @@
 
 // Constructor
 Employee::Employee(
-        const std::wstring& code,
+        const std::wstring& ID,
         const std::wstring& name,
         const std::wstring& role
 )
-        : code(code),
+        : ID(ID),
           name(name),
           role(role)
 {
 }
 
 // Getters
-const std::wstring& Employee::getCode() const {
-    return code;
+const std::wstring& Employee::getID() const {
+    return ID;
 }
 
 const std::wstring& Employee::getName() const {

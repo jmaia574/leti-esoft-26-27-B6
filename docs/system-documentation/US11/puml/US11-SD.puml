@@ -1,4 +1,5 @@
 @startuml
+
 title US11 - Register Parameter\nSequence Diagram (SD)
 
 skinparam backgroundColor #FFFFFF
@@ -29,8 +30,17 @@ Admin -> UI : enterCode(code)
 Admin -> UI : enterName(name)
 Admin -> UI : enterDescription(description)
 Admin -> UI : enterMetric(metric)
+
+UI --> Admin : requestMetricClassification()
 Admin -> UI : selectMetricType(metricType)
-Admin -> UI : enterReferenceValues(minimum, maximum)
+
+opt Numeric classification (Option 1)
+
+    UI --> Admin : requestMandatoryReferenceValues()
+
+    Admin -> UI : enterReferenceValues(minimum, maximum)
+
+end
 
 == Register Parameter ==
 
@@ -38,17 +48,35 @@ UI -> Service : execute(code, name, description,\nmetric, metricType, minimum, m
 activate Service
 
 create Parameter
+
 Service -> Parameter : new Parameter(code, name, description,\nmetric, metricType, minimum, maximum)
 activate Parameter
 
 Parameter -> Parameter : isValidCode(code)
+
 Parameter -> Parameter : isValidReferenceRange(minimum, maximum)
 
+note right of Parameter
+Numeric:
+Both values are mandatory.
+
+Qualitative:
+No numeric reference values.
+
+Minimum must not
+exceed maximum.
+end note
+
 alt Invalid parameter data
+
     Parameter --> Service : invalid_argument
+
     Service --> UI : invalid_argument
+
     UI --> Admin : displayRegistrationError()
+
 else Valid parameter data
+
     Parameter --> Service : parameter
     deactivate Parameter
 
@@ -59,9 +87,13 @@ else Valid parameter data
     deactivate Repository
 
     alt Parameter code already exists
+
         Service --> UI : false
+
         UI --> Admin : displayDuplicateCodeError()
+
     else Parameter code is unique
+
         Service -> Repository : add(parameter)
         activate Repository
 
@@ -69,8 +101,11 @@ else Valid parameter data
         deactivate Repository
 
         Service --> UI : true
+
         UI --> Admin : displaySuccessMessage()
+
     end
+
 end
 
 deactivate Service
@@ -82,8 +117,12 @@ Code must contain exactly
 5 alphanumeric characters.
 
 AC11-2:
-Reference values are only
-allowed for Numeric metrics.
+Reference values apply
+only to numeric metrics.
+
+Professor clarification:
+Numeric parameters require
+both minimum and maximum.
 end note
 
 @enduml

@@ -1,6 +1,7 @@
 //
 // ConsoleApp.cpp
 // UK Labs Management System
+// US10 - Register Test Type
 // US11 - Register Parameter
 // US13 - List Employees by Role
 // LETI-ESOFT 2026/2027 - Team B6
@@ -59,7 +60,6 @@ void registerParameter(RegisterParameter& service) {
     std::wstring description;
     std::wstring metric;
     std::wstring option;
-    std::wstring answer;
 
     std::wcout << L"\n===== US11 - REGISTER PARAMETER =====\n";
 
@@ -101,8 +101,10 @@ void registerParameter(RegisterParameter& service) {
 
     if (option == L"1") {
         metricType = MetricType::Numeric;
+
     } else if (option == L"2") {
         metricType = MetricType::Qualitative;
+
     } else {
         std::wcout << L"Invalid metric type.\n";
         return;
@@ -111,73 +113,95 @@ void registerParameter(RegisterParameter& service) {
     std::optional<double> minimum;
     std::optional<double> maximum;
 
-    // Reference values
-    std::wcout << L"\nAdd reference values? (Y/N): ";
+    // =====================================================
+    // Mandatory reference values for Numeric metrics
+    // =====================================================
 
-    if (!std::getline(std::wcin, answer)) {
-        return;
-    }
+    if (metricType == MetricType::Numeric) {
 
-    if (answer == L"Y" || answer == L"y") {
-
-        // AC11-2: Qualitative metrics cannot have reference values.
-        if (metricType == MetricType::Qualitative) {
-            std::wcout
-                    << L"\nRegistration failed: Reference values are only "
-                    << L"applicable to numeric metrics.\n";
-            return;
-        }
+        std::wcout
+            << L"\nNumeric parameters require both "
+            << L"minimum and maximum reference values.\n";
 
         double minValue;
         double maxValue;
 
+        // Minimum reference value
         if (!readDouble(
                 L"Minimum reference value: ",
                 minValue)) {
+
             std::wcout
-                    << L"Invalid minimum reference value.\n";
+                << L"\nRegistration failed: "
+                << L"Invalid minimum reference value.\n";
+
             return;
         }
 
+        // Maximum reference value
         if (!readDouble(
                 L"Maximum reference value: ",
                 maxValue)) {
+
             std::wcout
-                    << L"Invalid maximum reference value.\n";
+                << L"\nRegistration failed: "
+                << L"Invalid maximum reference value.\n";
+
+            return;
+        }
+
+        // Validate reference interval
+        if (minValue > maxValue) {
+
+            std::wcout
+                << L"\nRegistration failed: "
+                << L"Minimum reference value cannot "
+                << L"exceed maximum reference value.\n";
+
             return;
         }
 
         minimum = minValue;
         maximum = maxValue;
 
-    } else if (answer != L"N" && answer != L"n") {
-        std::wcout << L"Invalid option.\n";
-        return;
+    } else {
+
+        // Qualitative metrics cannot have numeric reference values.
+        std::wcout
+            << L"\nQualitative metric selected. "
+            << L"No numeric reference values required.\n";
     }
 
+    // =====================================================
     // Register parameter
+    // =====================================================
+
     try {
         bool success = service.execute(
-                code,
-                name,
-                description,
-                metric,
-                metricType,
-                minimum,
-                maximum
+            code,
+            name,
+            description,
+            metric,
+            metricType,
+            minimum,
+            maximum
         );
 
         if (success) {
+
             std::wcout
-                    << L"\nParameter registered successfully!\n";
+                << L"\nParameter registered successfully!\n";
+
         } else {
+
             std::wcout
-                    << L"\nError: Parameter code already exists.\n";
+                << L"\nError: Parameter code already exists.\n";
         }
 
     } catch (const std::invalid_argument& exception) {
+
         std::wcout
-                << L"\nRegistration failed: ";
+            << L"\nRegistration failed: ";
 
         // Exception messages are ASCII in our domain validation.
         const std::string message = exception.what();
@@ -221,18 +245,27 @@ void registerTestType(RegisterTestType& service) {
                 internalCode,
                 nhsCode,
                 collectionMethodDescription)) {
-            std::wcout << L"\nTest type registered successfully.\n";
-        } else {
+
             std::wcout
-                    << L"\nRegistration failed: Internal Code or NHS Code "
-                    << L"already exists.\n";
+                << L"\nTest type registered successfully.\n";
+
+        } else {
+
+            std::wcout
+                << L"\nRegistration failed: Internal Code or NHS Code "
+                << L"already exists.\n";
         }
+
     } catch (const std::invalid_argument& exception) {
+
         std::wcout << L"\nRegistration failed: ";
+
         const std::string message = exception.what();
+
         for (char character : message) {
             std::wcout << static_cast<wchar_t>(character);
         }
+
         std::wcout << L'\n';
     }
 }
@@ -253,7 +286,8 @@ void listEmployeesByRole(const ListEmployeesByRole& service) {
     }
 
     if (role.empty()) {
-        std::wcout << L"\nError: Employee role cannot be empty.\n";
+        std::wcout
+            << L"\nError: Employee role cannot be empty.\n";
         return;
     }
 
@@ -261,16 +295,20 @@ void listEmployeesByRole(const ListEmployeesByRole& service) {
     std::vector<Employee> employees = service.execute(role);
 
     if (employees.empty()) {
+
         std::wcout
-                << L"\nNo employees found for the selected role.\n";
+            << L"\nNo employees found for the selected role.\n";
+
         return;
     }
 
     std::wcout << L"\n===== EMPLOYEES =====\n";
     std::wcout << L"Role: " << role << L"\n";
-    std::wcout << L"Total employees: " << employees.size() << L"\n";
+    std::wcout << L"Total employees: "
+               << employees.size() << L"\n";
 
     for (const Employee& employee : employees) {
+
         std::wcout << L"\n-----------------------------\n";
         std::wcout << L"Code: " << employee.getCode() << L"\n";
         std::wcout << L"Name: " << employee.getName() << L"\n";
@@ -301,6 +339,7 @@ int main() {
     std::wstring option;
 
     do {
+
         std::wcout << L"\n========== UKLABSMS ==========\n";
         std::wcout << L"1 - Register Test Type (US10)\n";
         std::wcout << L"2 - Register Parameter (US11)\n";
@@ -313,18 +352,23 @@ int main() {
         }
 
         if (option == L"1") {
+
             registerTestType(registerTestTypeService);
 
         } else if (option == L"2") {
+
             registerParameter(registerParameterService);
 
         } else if (option == L"3") {
+
             listEmployeesByRole(listEmployeesService);
 
         } else if (option == L"0") {
+
             std::wcout << L"Exiting application...\n";
 
         } else {
+
             std::wcout << L"Invalid option.\n";
         }
 

@@ -12,20 +12,20 @@
 
 class Employee {
 private:
-    std::wstring code;
+    std::wstring ID;
     std::wstring name;
     std::wstring role;
 
 public:
     // Constructor
     Employee(
-            const std::wstring& code,
+            const std::wstring& ID,
             const std::wstring& name,
             const std::wstring& role
     );
 
     // Getters
-    const std::wstring& getCode() const;
+    const std::wstring& getID() const;
     const std::wstring& getName() const;
     const std::wstring& getRole() const;
 };
