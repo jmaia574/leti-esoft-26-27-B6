@@ -1,4 +1,5 @@
 @startuml
+
 title US13 - List Employees by Role\nSystem Sequence Diagram (SSD)
 
 skinparam backgroundColor #FFFFFF
@@ -14,24 +15,22 @@ skinparam NoteBackgroundColor #FFF9E6
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
-== Request Employee List ==
+' =====================================================
+' Main Success Scenario
+' =====================================================
 
-Admin -> System : requestEmployeesByRole()
-activate System
+Admin -> System : Requests employee list
 
-System --> Admin : requestRole()
+System --> Admin : Requests employee role
 
-Admin -> System : submitRole(role)
+Admin -> System : Provides the selected role
 
-alt Valid role and matching employees exist
-    System --> Admin : displayEmployees(employeeList, totalCount)
-else Valid role but no employees found
-    System --> Admin : displayNoEmployeesFound()
-else Empty role
-    System --> Admin : displayInvalidRoleError()
-end
+System --> Admin : Displays employees matching the\n selected role and their total count
 
-deactivate System
+
+' =====================================================
+' Additional Information
+' =====================================================
 
 note right of System
 US13 - List Employees by Role
