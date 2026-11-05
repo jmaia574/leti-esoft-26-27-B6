@@ -1,0 +1,103 @@
+@startuml
+
+title US11 - Register Parameter\nDomain Model (DM)
+
+' =====================================================
+' Visual configuration
+' =====================================================
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+skinparam linetype ortho
+
+hide methods
+hide circle
+
+' =====================================================
+' Domain concepts
+' =====================================================
+
+class Administrator
+
+class Parameter {
+    code
+    name
+    description
+    metric
+    metricType
+}
+
+class ReferenceRange {
+    minimum
+    maximum
+}
+
+class TestType {
+    internalCode
+    nhsCode
+    collectionMethodDescription
+}
+
+class TestTypeParameter
+
+' =====================================================
+' Domain associations
+' =====================================================
+
+Administrator "0..*" -- "0..*" Parameter : manages >
+
+Parameter "1" -- "0..1" ReferenceRange : has >
+
+TestType "1" -- "1..*" TestTypeParameter : defines >
+
+TestTypeParameter "0..*" -- "1" Parameter : identifies >
+
+' =====================================================
+' Business rules
+' =====================================================
+
+note right of Parameter
+AC11-1
+
+Each parameter has a unique
+code containing exactly five
+alphanumeric characters.
+
+AC11-2
+
+Reference values are applicable
+only to numeric metrics.
+end note
+
+note bottom of ReferenceRange
+A parameter may have
+no reference range.
+
+When both values exist:
+minimum <= maximum.
+end note
+
+note bottom of TestTypeParameter
+Associates test types
+with their parameters.
+
+This concept already exists
+in the global Domain Model.
+end note
+
+note top of Parameter
+Metric classification:
+
+Numeric
+Qualitative
+
+Represented in the CD
+by the MetricType enumeration.
+end note
+
+@enduml
