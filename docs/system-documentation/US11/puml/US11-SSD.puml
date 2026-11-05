@@ -23,37 +23,29 @@ Admin -> System : Requests parameter registration
 
 System --> Admin : Requests parameter information
 
-Admin -> System : Provides code, name, description,\nmetric and metric classification
+Admin -> System : Provides code, name, description\nand metric
 
-System --> Admin : Requests optional reference values
+System --> Admin : Requests metric classification\n(1 - Numeric; 2 - Qualitative)
 
-Admin -> System : Provides reference values,\nwhen applicable
+Admin -> System : Selects metric classification\n(1 or 2)
 
-alt Valid information and unique code
+' =====================================================
+' Optional Reference Values
+' =====================================================
 
-    System --> Admin : Confirms successful parameter registration
+opt Numeric metric (Option 1) and reference values requested
 
-else Invalid code format
+    System --> Admin : Requests minimum and maximum\nreference values
 
-    System --> Admin : Informs that the code must contain\nexactly five alphanumeric characters
-
-else Duplicate parameter code
-
-    System --> Admin : Informs that the parameter code\nis already registered
-
-else Reference values incompatible with metric type
-
-    System --> Admin : Informs that reference values are\nonly allowed for numeric metrics
-
-else Invalid reference interval
-
-    System --> Admin : Informs that the minimum reference\nvalue cannot exceed the maximum
-
-else Other invalid information
-
-    System --> Admin : Informs that the registration\ncould not be completed
+    Admin -> System : Provides minimum and maximum\nreference values
 
 end
+
+' =====================================================
+' Successful Registration
+' =====================================================
+
+System --> Admin : Confirms successful parameter registration
 
 ' =====================================================
 ' Acceptance Criteria
@@ -71,7 +63,8 @@ Reference values are only
 applicable to numeric metrics.
 
 Metric classification:
-Numeric or Qualitative.
+1 - Numeric
+2 - Qualitative (Non-numeric)
 end note
 
 @enduml
