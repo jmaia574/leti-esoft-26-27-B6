@@ -25,7 +25,7 @@ hide circle
 class Administrator
 
 class Employee {
-    code
+    ID
     name
 }
 
@@ -47,7 +47,7 @@ Employee "0..*" -- "1" Role : is assigned to >
 
 note right of Employee
 Each employee is identified
-by a code and has a name.
+by an ID and has a name.
 
 Employees can be consulted
 according to their assigned role.
