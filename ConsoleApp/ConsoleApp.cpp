@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "domain/parameter/RegisterParameter.h"
+#include "domain/testType/RegisterTestType.h"
 #include "domain/employee/EmployeeRepository.h"
 #include "domain/employee/ListEmployeesByRole.h"
 
@@ -190,6 +191,53 @@ void registerParameter(RegisterParameter& service) {
 }
 
 // =====================================================
+// US10 - Register Test Type
+// =====================================================
+
+void registerTestType(RegisterTestType& service) {
+    std::wstring internalCode;
+    std::wstring nhsCode;
+    std::wstring collectionMethodDescription;
+
+    std::wcout << L"\n===== US10 - REGISTER TEST TYPE =====\n";
+
+    std::wcout << L"Internal Code: ";
+    if (!std::getline(std::wcin, internalCode)) {
+        return;
+    }
+
+    std::wcout << L"NHS Code: ";
+    if (!std::getline(std::wcin, nhsCode)) {
+        return;
+    }
+
+    std::wcout << L"Description identifying the sample collection method: ";
+    if (!std::getline(std::wcin, collectionMethodDescription)) {
+        return;
+    }
+
+    try {
+        if (service.execute(
+                internalCode,
+                nhsCode,
+                collectionMethodDescription)) {
+            std::wcout << L"\nTest type registered successfully.\n";
+        } else {
+            std::wcout
+                    << L"\nRegistration failed: Internal Code or NHS Code "
+                    << L"already exists.\n";
+        }
+    } catch (const std::invalid_argument& exception) {
+        std::wcout << L"\nRegistration failed: ";
+        const std::string message = exception.what();
+        for (char character : message) {
+            std::wcout << static_cast<wchar_t>(character);
+        }
+        std::wcout << L'\n';
+    }
+}
+
+// =====================================================
 // US13 - List Employees by Role
 // =====================================================
 
@@ -238,6 +286,10 @@ void listEmployeesByRole(const ListEmployeesByRole& service) {
 
 int main() {
 
+    // US10 - Test-type registration
+    TestTypeRepository testTypeRepository;
+    RegisterTestType registerTestTypeService(testTypeRepository);
+
     // US11 - Parameter registration
     ParameterRepository parameterRepository;
     RegisterParameter registerParameterService(parameterRepository);
@@ -250,8 +302,9 @@ int main() {
 
     do {
         std::wcout << L"\n========== UKLABSMS ==========\n";
-        std::wcout << L"1 - Register Parameter (US11)\n";
-        std::wcout << L"2 - List Employees by Role (US13)\n";
+        std::wcout << L"1 - Register Test Type (US10)\n";
+        std::wcout << L"2 - Register Parameter (US11)\n";
+        std::wcout << L"3 - List Employees by Role (US13)\n";
         std::wcout << L"0 - Exit\n";
         std::wcout << L"Choose an option: ";
 
@@ -260,9 +313,12 @@ int main() {
         }
 
         if (option == L"1") {
-            registerParameter(registerParameterService);
+            registerTestType(registerTestTypeService);
 
         } else if (option == L"2") {
+            registerParameter(registerParameterService);
+
+        } else if (option == L"3") {
             listEmployeesByRole(listEmployeesService);
 
         } else if (option == L"0") {

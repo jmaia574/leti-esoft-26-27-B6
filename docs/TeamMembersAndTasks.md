@@ -2,14 +2,14 @@
 
 # 1. Team Members
 
-The team consists of the students listed in the table below. 
+The team consists of the students listed in the table below.
 
-| Student Number	 | Name          |
-|-----------------|---------------|
-| **1200858**     | Diogo Silva   |
-| **1210977**     | Nuno Teixeira |
-| **1211902**     | João Silva    |
-| **1240708**     | Rúben Silva   |
+| Student Number | Name          |
+|----------------|---------------|
+| **1200858**    | Diogo Silva   |
+| **1210977**    | Nuno Teixeira |
+| **1211902**    | João Silva    |
+| **1240708**    | Rúben Silva   |
 
 
 # 2. Task Distribution ###
@@ -27,12 +27,14 @@ Finally, keep in mind that each User Story is not isolated — it must be integr
 
 **The following table must always be kept up to date.**
 
-
-| Task                                                                                                     | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 |
-|:---------------------------------------------------------------------------------------------------------|:---:|:---:|:---:|:---:|
-| [Glossary](docs/system-documentation/global-artifacts/glossary.md)                                       | all | all | all | all |
-| [Use Case Diagram (UCD)](docs/system-documentation/global-artifacts/use-case-diagram.md)                 | all | all | all | all |
-| [Supplementary Specification](docs/system-documentation/global-artifacts/supplementary-specification.md) | all | all | all | all |
-| [Domain Model](docs/system-documentation/global-artifacts/analysis.md)                                   | all | all | all | all |
-
+| Task                                                     | Sprint 1 | Sprint 2 | Sprint 3 | Sprint 4 |
+|----------------------------------------------------------|:--------:|:--------:|:--------:|:--------:|
+| [Glossary](system-documentation/global-artifacts/glossary.md)                                          |   all    |   all    |   all    |   all    |
+| [Use Case Diagram (UCD)](system-documentation/global-artifacts/use-case-diagram.md)                            |   all    |   all    |   all    |   all    |
+| [Supplementary Specification](system-documentation/global-artifacts/suplementary-specification.md)                       |   all    |   all    |   all    |   all    |
+| [Domain Model](system-documentation/global-artifacts/analysis.md)                                      |   all    |   all    |   all    |   all    |
+| [US10](system-documentation/US10) (SDP Activities)                             |          | 1240708  |          |          |
+| [US11](system-documentation/US11) (SDP Activities)                             |          | 1200858  |          |          |
+| [US12](system-documentation/US12) (SDP Activities)       |          | 1211902  |          |          |
+| [US13](system-documentation/US13) (SDP Activities)                             |          | 1210977  |          |          |
 

@@ -1,0 +1,35 @@
+@startuml
+title US10 - Relevant Domain Model Excerpt\nDomain Model (DM)
+
+left to right direction
+hide methods
+hide circle
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+
+class Administrator
+
+class TestType {
+    internalCode
+    nhsCode
+    collectionMethodDescription
+}
+
+class TestTypeParameter
+
+class Parameter {
+    code
+    name
+    description
+    metric
+}
+
+Administrator "0..*" -- "0..*" TestType : manages
+TestType "1" -- "1..*" TestTypeParameter : defines
+TestTypeParameter "0..*" -- "1" Parameter : identifies
+
+@enduml
