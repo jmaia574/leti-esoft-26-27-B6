@@ -1,4 +1,5 @@
 @startuml
+
 title US11 - Register Parameter\nSystem Sequence Diagram (SSD)
 
 skinparam backgroundColor #FFFFFF
@@ -14,31 +15,55 @@ skinparam NoteBackgroundColor #FFF9E6
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
-Admin -> System : requestParameterRegistration()
-System --> Admin : requestParameterDetails()
+' =====================================================
+' Main Success Scenario
+' =====================================================
 
-Admin -> System : submitParameterDetails(code, name,\ndescription, metric, metricType, referenceValues)
+Admin -> System : Requests parameter registration
 
-activate System
+System --> Admin : Requests parameter information
+
+Admin -> System : Provides code, name, description,\nmetric and metric classification
+
+System --> Admin : Requests optional reference values
+
+Admin -> System : Provides reference values,\nwhen applicable
 
 alt Valid information and unique code
-    System --> Admin : parameterRegisteredSuccessfully()
+
+    System --> Admin : Confirms successful parameter registration
+
 else Invalid code format
-    System --> Admin : displayValidationError()
+
+    System --> Admin : Informs that the code must contain\nexactly five alphanumeric characters
+
 else Duplicate parameter code
-    System --> Admin : displayDuplicateCodeError()
+
+    System --> Admin : Informs that the parameter code\nis already registered
+
 else Reference values incompatible with metric type
-    System --> Admin : displayInvalidReferenceValuesError()
+
+    System --> Admin : Informs that reference values are\nonly allowed for numeric metrics
+
+else Invalid reference interval
+
+    System --> Admin : Informs that the minimum reference\nvalue cannot exceed the maximum
+
 else Other invalid information
-    System --> Admin : displayRegistrationError()
+
+    System --> Admin : Informs that the registration\ncould not be completed
+
 end
 
-deactivate System
+' =====================================================
+' Acceptance Criteria
+' =====================================================
 
 note right of System
 AC11-1:
-The code must have exactly
-five alphanumeric characters
+The parameter code must
+contain exactly five
+alphanumeric characters
 and must be unique.
 
 AC11-2:
