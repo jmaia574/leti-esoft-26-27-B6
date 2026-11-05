@@ -9,6 +9,7 @@
 #include "domain/parameter/ParameterRepository.h"
 #include "domain/parameter/RegisterParameter.h"
 
+#include <optional>
 #include <stdexcept>
 
 // =====================================================
@@ -102,7 +103,9 @@ TEST(ParameterTests, RejectsEmptyName) {
             L"RBC01",
             L"",
             L"Red blood cell count",
-            L"10^12/L"
+            L"10^12/L",
+            4.2,
+            5.9
         );
     }, std::invalid_argument);
 }
@@ -113,7 +116,9 @@ TEST(ParameterTests, RejectsEmptyDescription) {
             L"RBC01",
             L"Red Blood Cells",
             L"",
-            L"10^12/L"
+            L"10^12/L",
+            4.2,
+            5.9
         );
     }, std::invalid_argument);
 }
@@ -124,7 +129,10 @@ TEST(ParameterTests, RejectsEmptyMetric) {
             L"RBC01",
             L"Red Blood Cells",
             L"Red blood cell count",
-            L""
+            L"",
+            MetricType::Numeric,
+            4.2,
+            5.9
         );
     }, std::invalid_argument);
 }
@@ -140,7 +148,9 @@ TEST(ParameterRepositoryTests, AddsValidParameter) {
         L"RBC01",
         L"Red Blood Cells",
         L"Red blood cell count",
-        L"10^12/L"
+        L"10^12/L",
+        4.2,
+        5.9
     );
 
     EXPECT_TRUE(repository.add(parameter));
@@ -154,14 +164,18 @@ TEST(ParameterRepositoryTests, RejectsDuplicateCode) {
         L"RBC01",
         L"Red Blood Cells",
         L"Red blood cell count",
-        L"10^12/L"
+        L"10^12/L",
+        4.2,
+        5.9
     );
 
     Parameter second(
         L"RBC01",
         L"Another Parameter",
         L"Different description",
-        L"mg/dL"
+        L"mg/dL",
+        70.0,
+        100.0
     );
 
     EXPECT_TRUE(repository.add(first));
@@ -177,7 +191,9 @@ TEST(ParameterRepositoryTests, FindsExistingParameter) {
         L"RBC01",
         L"Red Blood Cells",
         L"Red blood cell count",
-        L"10^12/L"
+        L"10^12/L",
+        4.2,
+        5.9
     );
 
     repository.add(parameter);
@@ -223,14 +239,18 @@ TEST(RegisterParameterTests, RejectsDuplicateRegistration) {
         L"RBC01",
         L"Red Blood Cells",
         L"Red blood cell count",
-        L"10^12/L"
+        L"10^12/L",
+        4.2,
+        5.9
     ));
 
     EXPECT_FALSE(service.execute(
         L"RBC01",
         L"Another Parameter",
         L"Different description",
-        L"mg/dL"
+        L"mg/dL",
+        70.0,
+        100.0
     ));
 
     EXPECT_EQ(repository.count(), 1);
@@ -245,7 +265,9 @@ TEST(RegisterParameterTests, DoesNotStoreInvalidParameter) {
             L"AB12",
             L"Invalid Parameter",
             L"Invalid code length",
-            L"mg/dL"
+            L"mg/dL",
+            70.0,
+            100.0
         );
     }, std::invalid_argument);
 
@@ -367,6 +389,77 @@ TEST(RegisterParameterTests, DoesNotStoreQualitativeMetricWithReferenceValues) {
             MetricType::Qualitative,
             0.0,
             1.0
+        );
+    }, std::invalid_argument);
+
+    EXPECT_EQ(repository.count(), 0);
+}
+
+// =====================================================
+// NEW: Mandatory reference values for Numeric metrics
+// Rule confirmed with the professor
+// =====================================================
+
+// Numeric parameter without minimum must be rejected.
+TEST(ParameterTests, RejectsNumericMetricWithoutMinimum) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"GLU02",
+            L"Glucose",
+            L"Blood glucose concentration",
+            L"mg/dL",
+            MetricType::Numeric,
+            std::nullopt,
+            100.0
+        );
+    }, std::invalid_argument);
+}
+
+// Numeric parameter without maximum must be rejected.
+TEST(ParameterTests, RejectsNumericMetricWithoutMaximum) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"GLU03",
+            L"Glucose",
+            L"Blood glucose concentration",
+            L"mg/dL",
+            MetricType::Numeric,
+            70.0,
+            std::nullopt
+        );
+    }, std::invalid_argument);
+}
+
+// Numeric parameter without either reference value must be rejected.
+TEST(ParameterTests, RejectsNumericMetricWithoutBothReferenceValues) {
+    EXPECT_THROW({
+        Parameter parameter(
+            L"GLU04",
+            L"Glucose",
+            L"Blood glucose concentration",
+            L"mg/dL",
+            MetricType::Numeric,
+            std::nullopt,
+            std::nullopt
+        );
+    }, std::invalid_argument);
+}
+
+// The service must not store numeric parameters
+// when mandatory reference values are missing.
+TEST(RegisterParameterTests, DoesNotStoreNumericMetricWithoutReferenceValues) {
+    ParameterRepository repository;
+    RegisterParameter service(repository);
+
+    EXPECT_THROW({
+        service.execute(
+            L"GLU05",
+            L"Glucose",
+            L"Blood glucose concentration",
+            L"mg/dL",
+            MetricType::Numeric,
+            std::nullopt,
+            std::nullopt
         );
     }, std::invalid_argument);
 
