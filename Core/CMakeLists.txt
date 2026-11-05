@@ -15,6 +15,14 @@ add_library(Core
         headers/domain/parameter/RegisterParameter.h
         sources/domain/parameter/RegisterParameter.cpp
 
+        # US10 - Register Test Type
+        headers/domain/testType/TestType.h
+        sources/domain/testType/TestType.cpp
+        headers/domain/testType/TestTypeRepository.h
+        sources/domain/testType/TestTypeRepository.cpp
+        headers/domain/testType/RegisterTestType.h
+        sources/domain/testType/RegisterTestType.cpp
+
         # US13 - List Employees by Role
         headers/domain/employee/Employee.h
         sources/domain/employee/Employee.cpp
