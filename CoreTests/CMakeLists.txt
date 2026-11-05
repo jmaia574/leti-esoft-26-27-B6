@@ -14,6 +14,9 @@ add_executable(CoreTests
         # US11 - Register Parameter
         domain/parameter/ParameterTests.cpp
 
+        # US10 - Register Test Type
+        domain/testType/TestTypeTests.cpp
+
         # US13 - List Employees by Role
         domain/employee/EmployeeTests.cpp
 )
