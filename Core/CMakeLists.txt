@@ -18,10 +18,14 @@ add_library(Core
         # US10 - Register Test Type
         headers/domain/testType/TestType.h
         sources/domain/testType/TestType.cpp
-        headers/domain/testType/TestTypeRepository.h
-        sources/domain/testType/TestTypeRepository.cpp
-        headers/domain/testType/RegisterTestType.h
-        sources/domain/testType/RegisterTestType.cpp
+        headers/domain/testType/TestTypeContainer.h
+        sources/domain/testType/TestTypeContainer.cpp
+        headers/application/App.h
+        sources/application/App.cpp
+        headers/application/testType/RegisterTestTypeController.h
+        sources/application/testType/RegisterTestTypeController.cpp
+        headers/presentation/RegisterTestTypeView.h
+        sources/presentation/RegisterTestTypeView.cpp
 
         # US13 - List Employees by Role
         headers/domain/employee/Employee.h
