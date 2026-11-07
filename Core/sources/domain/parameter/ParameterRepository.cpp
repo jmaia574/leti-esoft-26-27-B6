@@ -8,12 +8,22 @@
 
 #include <algorithm>
 
-bool ParameterRepository::existsByCode(const std::wstring& code) const {
-    return findByCode(code) != nullptr;
+// =====================================================
+// Check if a parameter ID already exists
+// =====================================================
+
+bool ParameterRepository::existsByID(const std::wstring& ID) const {
+    return findByID(ID) != nullptr;
 }
 
+// =====================================================
+// Add a new parameter
+// =====================================================
+
 bool ParameterRepository::add(const Parameter& parameter) {
-    if (existsByCode(parameter.getCode())) {
+
+    // Prevent duplicate parameter IDs.
+    if (existsByID(parameter.getID())) {
         return false;
     }
 
@@ -21,14 +31,18 @@ bool ParameterRepository::add(const Parameter& parameter) {
     return true;
 }
 
-const Parameter* ParameterRepository::findByCode(
-    const std::wstring& code
+// =====================================================
+// Find a parameter by ID
+// =====================================================
+
+const Parameter* ParameterRepository::findByID(
+    const std::wstring& ID
 ) const {
     auto it = std::find_if(
         parameters.begin(),
         parameters.end(),
-        [&code](const Parameter& parameter) {
-            return parameter.getCode() == code;
+        [&ID](const Parameter& parameter) {
+            return parameter.getID() == ID;
         }
     );
 
@@ -38,6 +52,10 @@ const Parameter* ParameterRepository::findByCode(
 
     return &(*it);
 }
+
+// =====================================================
+// Count registered parameters
+// =====================================================
 
 std::size_t ParameterRepository::count() const {
     return parameters.size();

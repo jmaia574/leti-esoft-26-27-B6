@@ -15,7 +15,7 @@
 // =====================================================
 
 Parameter::Parameter(
-    const std::wstring& code,
+    const std::wstring& ID,
     const std::wstring& name,
     const std::wstring& description,
     const std::wstring& metric,
@@ -23,7 +23,7 @@ Parameter::Parameter(
     std::optional<double> minimumReferenceValue,
     std::optional<double> maximumReferenceValue
 )
-    : code(code),
+    : ID(ID),
       name(name),
       description(description),
       metric(metric),
@@ -31,10 +31,10 @@ Parameter::Parameter(
       minimumReferenceValue(minimumReferenceValue),
       maximumReferenceValue(maximumReferenceValue)
 {
-    // AC11-1: Code must contain exactly five alphanumeric characters.
-    if (!isValidCode(code)) {
+    // AC11-1: ID must contain exactly five alphanumeric characters.
+    if (!isValidID(ID)) {
         throw std::invalid_argument(
-            "Parameter code must contain exactly five alphanumeric characters."
+            "Parameter ID must contain exactly five alphanumeric characters."
         );
     }
 
@@ -63,7 +63,6 @@ Parameter::Parameter(
                 "Reference values are only applicable to numeric metrics."
             );
         }
-
     }
 
     // Professor clarification:
@@ -76,7 +75,6 @@ Parameter::Parameter(
                 "Numeric parameters require both minimum and maximum reference values."
             );
         }
-
     }
 }
 
@@ -85,7 +83,7 @@ Parameter::Parameter(
 // =====================================================
 
 Parameter::Parameter(
-    const std::wstring& code,
+    const std::wstring& ID,
     const std::wstring& name,
     const std::wstring& description,
     const std::wstring& metric,
@@ -93,7 +91,7 @@ Parameter::Parameter(
     std::optional<double> maximumReferenceValue
 )
     : Parameter(
-        code,
+        ID,
         name,
         description,
         metric,
@@ -110,8 +108,8 @@ Parameter::Parameter(
 // Getters
 // =====================================================
 
-const std::wstring& Parameter::getCode() const {
-    return code;
+const std::wstring& Parameter::getID() const {
+    return ID;
 }
 
 const std::wstring& Parameter::getName() const {
@@ -139,17 +137,17 @@ std::optional<double> Parameter::getMaximumReferenceValue() const {
 }
 
 // =====================================================
-// AC11-1: Code validation
+// AC11-1: ID validation
 // =====================================================
 
-bool Parameter::isValidCode(const std::wstring& code) {
-    if (code.length() != 5) {
+bool Parameter::isValidID(const std::wstring& ID) {
+    if (ID.length() != 5) {
         return false;
     }
 
     return std::all_of(
-        code.begin(),
-        code.end(),
+        ID.begin(),
+        ID.end(),
         [](wchar_t character) {
             return (character >= L'A' && character <= L'Z') ||
                    (character >= L'a' && character <= L'z') ||

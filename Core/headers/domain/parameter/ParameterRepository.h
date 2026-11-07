@@ -1,5 +1,7 @@
 //
-// Created by Tomas Campinho on 29/10/2026.
+// ParameterRepository.h
+// US11 - Register Parameter
+// LETI-ESOFT 2026/2027 - Team B6
 //
 
 #ifndef LETI_ESOFT_26_27_B6_PARAMETERREPOSITORY_H
@@ -16,16 +18,16 @@ private:
     std::vector<Parameter> parameters;
 
 public:
-    // Checks whether a parameter with the given code exists.
-    bool existsByCode(const std::wstring& code) const;
+    // Checks whether a parameter with the given ID exists.
+    bool existsByID(const std::wstring& ID) const;
 
-    // Stores a parameter if its code is not already registered.
-    // Returns false if the code already exists.
+    // Stores a parameter if its ID is not already registered.
+    // Returns false if the ID already exists.
     bool add(const Parameter& parameter);
 
-    // Returns the parameter with the specified code.
+    // Returns the parameter with the specified ID.
     // Returns nullptr if the parameter does not exist.
-    const Parameter* findByCode(const std::wstring& code) const;
+    const Parameter* findByID(const std::wstring& ID) const;
 
     // Returns the total number of registered parameters.
     std::size_t count() const;

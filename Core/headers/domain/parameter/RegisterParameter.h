@@ -22,7 +22,7 @@ public:
 
     // Register a parameter with explicit metric classification.
     bool execute(
-        const std::wstring& code,
+        const std::wstring& ID,
         const std::wstring& name,
         const std::wstring& description,
         const std::wstring& metric,
@@ -33,7 +33,7 @@ public:
 
     // Legacy method - temporary compatibility with existing code.
     bool execute(
-        const std::wstring& code,
+        const std::wstring& ID,
         const std::wstring& name,
         const std::wstring& description,
         const std::wstring& metric,

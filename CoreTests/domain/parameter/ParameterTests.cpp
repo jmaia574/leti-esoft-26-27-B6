@@ -1,4 +1,5 @@
 //
+// ParameterTests.cpp
 // US11 - Register Parameter
 // Unit Tests - LETI-ESOFT 2026/2027 - Team B6
 //
@@ -13,31 +14,31 @@
 #include <stdexcept>
 
 // =====================================================
-// AC11-1: Parameter code validation
+// AC11-1: Parameter ID validation
 // =====================================================
 
-TEST(ParameterTests, AcceptsValidAlphanumericCode) {
-    EXPECT_TRUE(Parameter::isValidCode(L"RBC01"));
-    EXPECT_TRUE(Parameter::isValidCode(L"12345"));
-    EXPECT_TRUE(Parameter::isValidCode(L"ABCDE"));
+TEST(ParameterTests, AcceptsValidAlphanumericID) {
+    EXPECT_TRUE(Parameter::isValidID(L"RBC01"));
+    EXPECT_TRUE(Parameter::isValidID(L"12345"));
+    EXPECT_TRUE(Parameter::isValidID(L"ABCDE"));
 }
 
-TEST(ParameterTests, RejectsCodeWithLessThanFiveCharacters) {
-    EXPECT_FALSE(Parameter::isValidCode(L"ABC1"));
+TEST(ParameterTests, RejectsIDWithLessThanFiveCharacters) {
+    EXPECT_FALSE(Parameter::isValidID(L"ABC1"));
 }
 
-TEST(ParameterTests, RejectsCodeWithMoreThanFiveCharacters) {
-    EXPECT_FALSE(Parameter::isValidCode(L"ABC123"));
+TEST(ParameterTests, RejectsIDWithMoreThanFiveCharacters) {
+    EXPECT_FALSE(Parameter::isValidID(L"ABC123"));
 }
 
 TEST(ParameterTests, RejectsNonAlphanumericCharacters) {
-    EXPECT_FALSE(Parameter::isValidCode(L"AB@12"));
-    EXPECT_FALSE(Parameter::isValidCode(L"AB 12"));
-    EXPECT_FALSE(Parameter::isValidCode(L"AB-12"));
+    EXPECT_FALSE(Parameter::isValidID(L"AB@12"));
+    EXPECT_FALSE(Parameter::isValidID(L"AB 12"));
+    EXPECT_FALSE(Parameter::isValidID(L"AB-12"));
 }
 
-TEST(ParameterTests, RejectsEmptyCode) {
-    EXPECT_FALSE(Parameter::isValidCode(L""));
+TEST(ParameterTests, RejectsEmptyID) {
+    EXPECT_FALSE(Parameter::isValidID(L""));
 }
 
 // =====================================================
@@ -138,7 +139,7 @@ TEST(ParameterTests, RejectsEmptyMetric) {
 }
 
 // =====================================================
-// Repository tests: Code uniqueness
+// Repository tests: ID uniqueness
 // =====================================================
 
 TEST(ParameterRepositoryTests, AddsValidParameter) {
@@ -157,7 +158,7 @@ TEST(ParameterRepositoryTests, AddsValidParameter) {
     EXPECT_EQ(repository.count(), 1);
 }
 
-TEST(ParameterRepositoryTests, RejectsDuplicateCode) {
+TEST(ParameterRepositoryTests, RejectsDuplicateID) {
     ParameterRepository repository;
 
     Parameter first(
@@ -198,16 +199,16 @@ TEST(ParameterRepositoryTests, FindsExistingParameter) {
 
     repository.add(parameter);
 
-    const Parameter* found = repository.findByCode(L"RBC01");
+    const Parameter* found = repository.findByID(L"RBC01");
 
     ASSERT_NE(found, nullptr);
     EXPECT_EQ(found->getName(), L"Red Blood Cells");
 }
 
-TEST(ParameterRepositoryTests, ReturnsNullForUnknownCode) {
+TEST(ParameterRepositoryTests, ReturnsNullForUnknownID) {
     ParameterRepository repository;
 
-    EXPECT_EQ(repository.findByCode(L"XXXXX"), nullptr);
+    EXPECT_EQ(repository.findByID(L"XXXXX"), nullptr);
 }
 
 // =====================================================
@@ -264,7 +265,7 @@ TEST(RegisterParameterTests, DoesNotStoreInvalidParameter) {
         service.execute(
             L"AB12",
             L"Invalid Parameter",
-            L"Invalid code length",
+            L"Invalid ID length",
             L"mg/dL",
             70.0,
             100.0
@@ -350,7 +351,7 @@ TEST(RegisterParameterTests, RegistersExplicitNumericMetricWithNewUnit) {
 
     EXPECT_EQ(repository.count(), 1);
 
-    const Parameter* parameter = repository.findByCode(L"GLU01");
+    const Parameter* parameter = repository.findByID(L"GLU01");
 
     ASSERT_NE(parameter, nullptr);
     EXPECT_EQ(parameter->getMetricType(), MetricType::Numeric);
@@ -370,7 +371,7 @@ TEST(RegisterParameterTests, RegistersExplicitQualitativeMetric) {
 
     EXPECT_EQ(repository.count(), 1);
 
-    const Parameter* parameter = repository.findByCode(L"COV01");
+    const Parameter* parameter = repository.findByID(L"COV01");
 
     ASSERT_NE(parameter, nullptr);
     EXPECT_EQ(parameter->getMetricType(), MetricType::Qualitative);
@@ -396,7 +397,7 @@ TEST(RegisterParameterTests, DoesNotStoreQualitativeMetricWithReferenceValues) {
 }
 
 // =====================================================
-// NEW: Mandatory reference values for Numeric metrics
+// Mandatory reference values for Numeric metrics
 // Rule confirmed with the professor
 // =====================================================
 

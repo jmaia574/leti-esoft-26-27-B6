@@ -55,7 +55,7 @@ bool readDouble(const std::wstring& prompt, double& value) {
 // =====================================================
 
 void registerParameter(RegisterParameter& service) {
-    std::wstring code;
+    std::wstring ID;
     std::wstring name;
     std::wstring description;
     std::wstring metric;
@@ -63,9 +63,9 @@ void registerParameter(RegisterParameter& service) {
 
     std::wcout << L"\n===== US11 - REGISTER PARAMETER =====\n";
 
-    // Parameter code
-    std::wcout << L"Code: ";
-    if (!std::getline(std::wcin, code)) {
+    // Parameter ID
+    std::wcout << L"ID: ";
+    if (!std::getline(std::wcin, ID)) {
         return;
     }
 
@@ -178,7 +178,7 @@ void registerParameter(RegisterParameter& service) {
 
     try {
         bool success = service.execute(
-            code,
+            ID,
             name,
             description,
             metric,
@@ -195,7 +195,7 @@ void registerParameter(RegisterParameter& service) {
         } else {
 
             std::wcout
-                << L"\nError: Parameter code already exists.\n";
+                << L"\nError: Parameter ID already exists.\n";
         }
 
     } catch (const std::invalid_argument& exception) {

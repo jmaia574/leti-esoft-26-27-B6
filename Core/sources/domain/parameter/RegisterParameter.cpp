@@ -6,7 +6,10 @@
 
 #include "domain/parameter/RegisterParameter.h"
 
+// =====================================================
 // Constructor
+// =====================================================
+
 RegisterParameter::RegisterParameter(ParameterRepository& repository)
     : repository(repository) {
 }
@@ -16,7 +19,7 @@ RegisterParameter::RegisterParameter(ParameterRepository& repository)
 // =====================================================
 
 bool RegisterParameter::execute(
-    const std::wstring& code,
+    const std::wstring& ID,
     const std::wstring& name,
     const std::wstring& description,
     const std::wstring& metric,
@@ -26,7 +29,7 @@ bool RegisterParameter::execute(
 ) {
     // Create and validate the parameter.
     Parameter parameter(
-        code,
+        ID,
         name,
         description,
         metric,
@@ -35,8 +38,8 @@ bool RegisterParameter::execute(
         maximumReferenceValue
     );
 
-    // AC11-1: Parameter code must be unique.
-    if (repository.existsByCode(parameter.getCode())) {
+    // AC11-1: Parameter ID must be unique.
+    if (repository.existsByID(parameter.getID())) {
         return false;
     }
 
@@ -49,17 +52,19 @@ bool RegisterParameter::execute(
 // =====================================================
 
 bool RegisterParameter::execute(
-    const std::wstring& code,
+    const std::wstring& ID,
     const std::wstring& name,
     const std::wstring& description,
     const std::wstring& metric,
     std::optional<double> minimumReferenceValue,
     std::optional<double> maximumReferenceValue
 ) {
-    // Preserve existing behaviour until all callers
-    // use explicit metric classification.
+    // Preserve compatibility with existing callers.
+    // The Parameter constructor enforces mandatory
+    // reference values for numeric metrics.
+
     return execute(
-        code,
+        ID,
         name,
         description,
         metric,
