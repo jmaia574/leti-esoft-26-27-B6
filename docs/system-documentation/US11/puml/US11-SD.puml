@@ -26,7 +26,7 @@ activate UI
 
 UI --> Admin : requestParameterDetails()
 
-Admin -> UI : enterCode(code)
+Admin -> UI : enterID(ID)
 Admin -> UI : enterName(name)
 Admin -> UI : enterDescription(description)
 Admin -> UI : enterMetric(metric)
@@ -44,21 +44,22 @@ end
 
 == Register Parameter ==
 
-UI -> Service : execute(code, name, description,\nmetric, metricType, minimum, maximum)
+UI -> Service : execute(ID, name, description,\nmetric, metricType, minimum, maximum)
 activate Service
 
 create Parameter
 
-Service -> Parameter : new Parameter(code, name, description,\nmetric, metricType, minimum, maximum)
+Service -> Parameter : new Parameter(ID, name, description,\nmetric, metricType, minimum, maximum)
 activate Parameter
 
-Parameter -> Parameter : isValidCode(code)
+Parameter -> Parameter : isValidID(ID)
 
 Parameter -> Parameter : isValidReferenceRange(minimum, maximum)
 
 note right of Parameter
 Numeric:
-Both values are mandatory.
+Both reference values
+are mandatory.
 
 Qualitative:
 No numeric reference values.
@@ -80,19 +81,19 @@ else Valid parameter data
     Parameter --> Service : parameter
     deactivate Parameter
 
-    Service -> Repository : existsByCode(code)
+    Service -> Repository : existsByID(ID)
     activate Repository
 
     Repository --> Service : exists
     deactivate Repository
 
-    alt Parameter code already exists
+    alt Parameter ID already exists
 
         Service --> UI : false
 
-        UI --> Admin : displayDuplicateCodeError()
+        UI --> Admin : displayDuplicateIDError()
 
-    else Parameter code is unique
+    else Parameter ID is unique
 
         Service -> Repository : add(parameter)
         activate Repository
@@ -113,8 +114,9 @@ deactivate UI
 
 note right of Parameter
 AC11-1:
-Code must contain exactly
-5 alphanumeric characters.
+Parameter ID must contain
+exactly five alphanumeric
+characters and be unique.
 
 AC11-2:
 Reference values apply
@@ -122,7 +124,8 @@ only to numeric metrics.
 
 Professor clarification:
 Numeric parameters require
-both minimum and maximum.
+both minimum and maximum
+reference values.
 end note
 
 @enduml

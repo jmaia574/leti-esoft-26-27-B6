@@ -1,27 +1,21 @@
 @startuml
-
 title US11 - Register Parameter\nDomain Model (DM)
 
-skinparam backgroundColor #FFFFFF
-skinparam shadowing false
-skinparam classAttributeIconSize 0
-skinparam classBorderColor #2563EB
+skinparam backgroundColor white
 skinparam classBackgroundColor #EFF6FF
-skinparam ArrowColor #475569
-skinparam NoteBackgroundColor #FFF9E6
-skinparam linetype ortho
+skinparam classBorderColor #2563EB
+skinparam classArrowColor #2563EB
+skinparam noteBackgroundColor #FFF7ED
+skinparam noteBorderColor #F59E0B
+skinparam shadowing false
 
 hide methods
 hide circle
 
-' =====================================================
-' Domain concepts
-' =====================================================
-
 class Administrator
 
 class Parameter {
-    code
+    ID
     name
     description
     metric
@@ -42,64 +36,76 @@ class TestType {
 class TestTypeParameter
 
 ' =====================================================
-' Domain associations
+' Domain relationships
 ' =====================================================
 
-Administrator "0..*" -- "0..*" Parameter : manages >
+Administrator "1" -- "0..*" Parameter : manages
 
-Parameter "1" -- "0..1" ReferenceRange : has >
+Parameter "1" -- "0..1" ReferenceRange : has
 
-TestType "1" -- "1..*" TestTypeParameter : defines >
+TestType "1" -- "1..*" TestTypeParameter : defines
 
-TestTypeParameter "0..*" -- "1" Parameter : identifies >
+TestTypeParameter "0..*" -- "1" Parameter : identifies
 
 ' =====================================================
-' Business rules
+' Acceptance criteria
+' =====================================================
+
+note top of Parameter
+    AC11-1
+
+    Each Parameter has a unique
+    ID containing exactly five
+    alphanumeric characters.
+
+    AC11-2
+
+    Reference values are applicable
+    only to numeric metrics.
+
+    For Numeric, both bounds
+    are mandatory.
+end note
+
+' =====================================================
+' Metric classification
 ' =====================================================
 
 note right of Parameter
-AC11-1
+    Metric classification:
 
-Each parameter has a unique
-code containing exactly five
-alphanumeric characters.
+    Numeric
+    Qualitative
 
-AC11-2
-
-Reference values are applicable
-only to numeric metrics.
-
-For Numeric, both bounds
-are mandatory.
+    Represented in the CD
+    by the MetricType enumeration.
 end note
 
-note bottom of ReferenceRange
-Numeric parameter:
-exactly one reference range,
-with both bounds mandatory.
+' =====================================================
+' Reference range constraints
+' =====================================================
 
-Qualitative parameter:
-no reference range.
+note right of ReferenceRange
+    Numeric parameter:
+    exactly one reference range,
+    with both bounds mandatory.
 
-minimum <= maximum.
+    Qualitative parameter:
+    no reference range.
+
+    minimum <= maximum.
 end note
 
-note bottom of TestTypeParameter
-Associates test types
-with their parameters.
+' =====================================================
+' Shared domain concepts
+' =====================================================
 
-This concept already exists
-in the global Domain Model.
-end note
+note right of TestTypeParameter
+    Associates test types
+    with their parameters.
 
-note top of Parameter
-Metric classification:
-
-Numeric
-Qualitative
-
-Represented in the CD
-by the MetricType enumeration.
+    This concept already exists
+    in the global Domain Model.
 end note
 
 @enduml

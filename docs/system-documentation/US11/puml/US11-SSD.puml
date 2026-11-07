@@ -23,17 +23,17 @@ Admin -> System : Requests parameter registration
 
 System --> Admin : Requests parameter information
 
-Admin -> System : Provides code, name, description\nand metric
+Admin -> System : Provides ID, name, description\nand metric
 
 System --> Admin : Requests metric classification\n(1 - Numeric; 2 - Qualitative)
 
 Admin -> System : Selects metric classification\n(1 or 2)
 
 ' =====================================================
-' Optional Reference Values
+' Reference Values for Numeric Parameters
 ' =====================================================
 
-opt Numeric metric (Option 1) and reference values requested
+opt Numeric metric (Option 1)
 
     System --> Admin : Requests minimum and maximum\nreference values
 
@@ -53,7 +53,7 @@ System --> Admin : Confirms successful parameter registration
 
 note right of System
 AC11-1:
-The parameter code must
+The Parameter ID must
 contain exactly five
 alphanumeric characters
 and must be unique.
@@ -61,6 +61,10 @@ and must be unique.
 AC11-2:
 Reference values are only
 applicable to numeric metrics.
+
+Numeric parameters require
+both minimum and maximum
+reference values.
 
 Metric classification:
 1 - Numeric

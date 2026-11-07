@@ -15,7 +15,7 @@ enum MetricType {
 }
 
 class Parameter {
-    - code : wstring
+    - ID : wstring
     - name : wstring
     - description : wstring
     - metric : wstring
@@ -23,16 +23,16 @@ class Parameter {
     - minimumReferenceValue : optional<double>
     - maximumReferenceValue : optional<double>
     --
-    + Parameter(code, name, description, metric, metricType, minimum, maximum)
-    + Parameter(code, name, description, metric, minimum, maximum)
-    + getCode() : const wstring&
+    + Parameter(ID, name, description, metric, metricType, minimum, maximum)
+    + Parameter(ID, name, description, metric, minimum, maximum)
+    + getID() : const wstring&
     + getName() : const wstring&
     + getDescription() : const wstring&
     + getMetric() : const wstring&
     + getMetricType() : MetricType
     + getMinimumReferenceValue() : optional<double>
     + getMaximumReferenceValue() : optional<double>
-    + {static} isValidCode(code) : bool
+    + {static} isValidID(ID) : bool
     + {static} isNumericMetric(metric) : bool
     + {static} isValidReferenceRange(minimum, maximum) : bool
 }
@@ -41,8 +41,8 @@ class ParameterRepository {
     - parameters : vector<Parameter>
     --
     + add(parameter) : bool
-    + findByCode(code) : const Parameter*
-    + existsByCode(code) : bool
+    + findByID(ID) : const Parameter*
+    + existsByID(ID) : bool
     + count() : size_t
 }
 
@@ -50,8 +50,8 @@ class RegisterParameter {
     - repository : ParameterRepository&
     --
     + RegisterParameter(repository)
-    + execute(code, name, description, metric, metricType, minimum, maximum) : bool
-    + execute(code, name, description, metric, minimum, maximum) : bool
+    + execute(ID, name, description, metric, metricType, minimum, maximum) : bool
+    + execute(ID, name, description, metric, minimum, maximum) : bool
 }
 
 Parameter --> MetricType : uses
@@ -61,15 +61,22 @@ RegisterParameter ..> Parameter : creates
 
 note right of Parameter
 AC11-1:
-Code must contain exactly
-5 alphanumeric characters.
+Parameter ID must contain
+exactly 5 alphanumeric
+characters and be unique.
 
 AC11-2:
+Reference values are only
+applicable to numeric metrics.
+
 Numeric metrics require
-both minimum and maximum.
+both minimum and maximum
+reference values.
 
 Qualitative metrics must not
 have numeric reference values.
+
+minimum <= maximum
 
 optional<double> represents
 absence for Qualitative and
