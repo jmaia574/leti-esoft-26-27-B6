@@ -51,7 +51,7 @@ else Valid role
 
     alt Employees found
         loop For each matching employee
-            UI --> Admin : displayEmployee(code, name, role)
+            UI --> Admin : displayEmployee(ID, name, role)
         end
 
         UI --> Admin : displayTotalEmployees(count)

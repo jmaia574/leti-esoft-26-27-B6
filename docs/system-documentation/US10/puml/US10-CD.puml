@@ -1,59 +1,41 @@
 @startuml
 title US10 - Register a Test Type\nClass Diagram (CD)
 
-skinparam backgroundColor #FFFFFF
-skinparam shadowing false
+hide circle
 skinparam classAttributeIconSize 0
-skinparam classBorderColor #2563EB
-skinparam classBackgroundColor #EFF6FF
-skinparam ArrowColor #475569
-skinparam NoteBackgroundColor #FFF9E6
 
-class ConsoleApp {
-    +registerTestType()
+class RegisterTestTypeView {
 }
 
-class RegisterTestType {
-    -repository : TestTypeRepository&
-    --
-    +RegisterTestType(repository)
-    +execute(internalCode, nhsCode, collectionMethodDescription) : bool
+class RegisterTestTypeController {
+    +registerTestType(internalCode, nhsCode, collectionMethodDescription)
 }
 
-class TestTypeRepository {
-    -testTypes : vector<TestType>
-    --
-    +add(testType) : bool
-    +existsByInternalCode(internalCode) : bool
-    +existsByNhsCode(nhsCode) : bool
+class App {
+    - App()
+    +{static} getInstance() : App
+    +getTestTypeContainer() : TestTypeContainer
+}
+
+class TestTypeContainer {
+    +create(internalCode, nhsCode, collectionMethodDescription) : TestType
+    +save(testType) : bool
 }
 
 class TestType {
-    -internalCode : wstring
-    -nhsCode : wstring
-    -collectionMethodDescription : wstring
-    --
-    +TestType(internalCode, nhsCode, collectionMethodDescription)
-    +getInternalCode() : const wstring&
-    +getNhsCode() : const wstring&
-    +getCollectionMethodDescription() : const wstring&
-    +{static} isValidInternalCode(internalCode) : bool
-    +{static} isValidNhsCode(nhsCode) : bool
+    -internalCode
+    -nhsCode
+    -collectionMethodDescription
+    TestType(internalCode, nhsCode, collectionMethodDescription)
 }
 
-ConsoleApp ..> RegisterTestType : invokes
-RegisterTestType --> TestTypeRepository : uses
-TestTypeRepository "1" o-- "0..*" TestType : stores
+RegisterTestTypeView ..> RegisterTestTypeController
+RegisterTestTypeController ..> App
+RegisterTestTypeController .> TestTypeContainer
+RegisterTestTypeController .> TestType
 
-note right of TestType
-The constructor enforces the official format criteria:
-AC10-1: four-digit Internal Code.
-AC10-2: five alphanumeric NHS Code.
-end note
-
-note bottom of TestTypeRepository
-The repository checks the uniqueness criterion:
-AC10-3: both codes are unique among registered test types.
-end note
+App -> "1" App : instance
+App --> "1" TestTypeContainer : maintains
+TestTypeContainer -> "  * " TestType : records
 
 @enduml

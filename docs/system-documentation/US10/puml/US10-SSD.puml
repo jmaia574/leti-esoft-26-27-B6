@@ -9,34 +9,13 @@ skinparam ParticipantBorderColor #2563EB
 skinparam ParticipantBackgroundColor #EFF6FF
 skinparam ActorBorderColor #334155
 skinparam ArrowColor #475569
-skinparam NoteBackgroundColor #FFF9E6
-
-autoactivate on
-autonumber
 
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
-Admin -> System : requestTestTypeRegistration()
-System --> Admin : requestTestTypeData()
-Admin -> System : submitTestTypeData(internalCode, nhsCode,\ncollectionMethodDescription)
-
-alt Internal Code does not contain exactly four digits
-    System --> Admin : registrationRejected()
-else NHS Code is not five alphanumeric characters
-    System --> Admin : registrationRejected()
-else Internal Code is already registered
-    System --> Admin : registrationRejected()
-else NHS Code is already registered
-    System --> Admin : registrationRejected()
-else Codes are valid and unique
-    System --> Admin : registrationSucceeded()
-end
-
-note right of System
-AC10-1: Internal Code has exactly four digits.
-AC10-2: NHS Code has exactly five alphanumeric characters.
-AC10-3: Both codes are unique among registered test types.
-end note
+Admin -> System : The Administrator asks to register a Test Type
+System --> Admin : The system requests the Internal Code, NHS Code,\nand collection-method description
+Admin -> System : The Administrator provides the requested information
+System --> Admin : The system registers the Test Type and informs\nthe Administrator that the operation succeeded
 
 @enduml

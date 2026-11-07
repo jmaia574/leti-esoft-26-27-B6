@@ -1,0 +1,39 @@
+@startuml
+title US12 - Register an Employee\nDomain Model (DM)
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
+skinparam linetype ortho
+
+hide methods
+hide circle
+
+class Administrator
+
+class Employee {
+    id
+    name
+    phoneNumber
+    emailAddress
+    doctorIndexNumber [0..1]
+}
+
+class Role {
+    name
+}
+
+Administrator "1" ---- "0..*" Employee : registers >
+Employee "0..*" --- "1" Role : is assigned to >
+
+note bottom of Employee
+Doctor Index Number is mandatory
+when the assigned role
+is Specialist Doctor.
+end note
+
+@enduml

@@ -16,7 +16,8 @@
 #include <vector>
 
 #include "domain/parameter/RegisterParameter.h"
-#include "domain/testType/RegisterTestType.h"
+#include "application/testType/RegisterTestTypeController.h"
+#include "presentation/RegisterTestTypeView.h"
 #include "domain/employee/EmployeeRepository.h"
 #include "domain/employee/ListEmployeesByRole.h"
 
@@ -218,56 +219,8 @@ void registerParameter(RegisterParameter& service) {
 // US10 - Register Test Type
 // =====================================================
 
-void registerTestType(RegisterTestType& service) {
-    std::wstring internalCode;
-    std::wstring nhsCode;
-    std::wstring collectionMethodDescription;
-
-    std::wcout << L"\n===== US10 - REGISTER TEST TYPE =====\n";
-
-    std::wcout << L"Internal Code: ";
-    if (!std::getline(std::wcin, internalCode)) {
-        return;
-    }
-
-    std::wcout << L"NHS Code: ";
-    if (!std::getline(std::wcin, nhsCode)) {
-        return;
-    }
-
-    std::wcout << L"Description identifying the sample collection method: ";
-    if (!std::getline(std::wcin, collectionMethodDescription)) {
-        return;
-    }
-
-    try {
-        if (service.execute(
-                internalCode,
-                nhsCode,
-                collectionMethodDescription)) {
-
-            std::wcout
-                << L"\nTest type registered successfully.\n";
-
-        } else {
-
-            std::wcout
-                << L"\nRegistration failed: Internal Code or NHS Code "
-                << L"already exists.\n";
-        }
-
-    } catch (const std::invalid_argument& exception) {
-
-        std::wcout << L"\nRegistration failed: ";
-
-        const std::string message = exception.what();
-
-        for (char character : message) {
-            std::wcout << static_cast<wchar_t>(character);
-        }
-
-        std::wcout << L'\n';
-    }
+void registerTestType(RegisterTestTypeView& view) {
+    view.show(std::wcin, std::wcout);
 }
 
 // =====================================================
@@ -325,8 +278,8 @@ void listEmployeesByRole(const ListEmployeesByRole& service) {
 int main() {
 
     // US10 - Test-type registration
-    TestTypeRepository testTypeRepository;
-    RegisterTestType registerTestTypeService(testTypeRepository);
+    RegisterTestTypeController registerTestTypeController;
+    RegisterTestTypeView registerTestTypeView(registerTestTypeController);
 
     // US11 - Parameter registration
     ParameterRepository parameterRepository;
@@ -353,7 +306,7 @@ int main() {
 
         if (option == L"1") {
 
-            registerTestType(registerTestTypeService);
+            registerTestType(registerTestTypeView);
 
         } else if (option == L"2") {
 

@@ -28,8 +28,8 @@ class Parameter {
     metric
 }
 
-Administrator "0..*" -- "0..*" TestType : manages
-TestType "1" -- "1..*" TestTypeParameter : defines
-TestTypeParameter "0..*" -- "1" Parameter : identifies
+Administrator "0..*" -- "0..*" TestType : manages >
+TestType "1" -- "1..*" TestTypeParameter : defines >
+TestTypeParameter "0..*" -- "1" Parameter : identifies >
 
 @enduml
