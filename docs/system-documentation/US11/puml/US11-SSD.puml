@@ -1,6 +1,5 @@
 @startuml
-
-title US11 - Register Parameter\nSystem Sequence Diagram (SSD)
+title US11 - Register a Parameter\nSystem Sequence Diagram (SSD)
 
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
@@ -10,65 +9,25 @@ skinparam ParticipantBorderColor #2563EB
 skinparam ParticipantBackgroundColor #EFF6FF
 skinparam ActorBorderColor #334155
 skinparam ArrowColor #475569
-skinparam NoteBackgroundColor #FFF9E6
 
 actor "Administrator" as Admin
 participant "UKLabsMS" as System
 
-' =====================================================
-' Main Success Scenario
-' =====================================================
+Admin -> System : The Administrator asks to register a Parameter
 
-Admin -> System : Requests parameter registration
+System --> Admin : The system requests the Parameter ID, name,\ndescription, and metric
 
-System --> Admin : Requests parameter information
+Admin -> System : The Administrator provides the requested information
 
-Admin -> System : Provides ID, name, description\nand metric
+System --> Admin : The system requests the metric classification\n(Numeric or Qualitative)
 
-System --> Admin : Requests metric classification\n(1 - Numeric; 2 - Qualitative)
+Admin -> System : The Administrator selects the metric classification
 
-Admin -> System : Selects metric classification\n(1 or 2)
-
-' =====================================================
-' Reference Values for Numeric Parameters
-' =====================================================
-
-opt Numeric metric (Option 1)
-
-    System --> Admin : Requests minimum and maximum\nreference values
-
-    Admin -> System : Provides minimum and maximum\nreference values
-
+opt Numeric metric
+    System --> Admin : The system requests the minimum and maximum\nreference values
+    Admin -> System : The Administrator provides both reference values
 end
 
-' =====================================================
-' Successful Registration
-' =====================================================
-
-System --> Admin : Confirms successful parameter registration
-
-' =====================================================
-' Acceptance Criteria
-' =====================================================
-
-note right of System
-AC11-1:
-The Parameter ID must
-contain exactly five
-alphanumeric characters
-and must be unique.
-
-AC11-2:
-Reference values are only
-applicable to numeric metrics.
-
-Numeric parameters require
-both minimum and maximum
-reference values.
-
-Metric classification:
-1 - Numeric
-2 - Qualitative (Non-numeric)
-end note
+System --> Admin : The system registers the Parameter and informs\nthe Administrator that the operation succeeded
 
 @enduml

@@ -1,131 +1,66 @@
 @startuml
+title US11 - Register a Parameter\nSequence Diagram (SD)
 
-title US11 - Register Parameter\nSequence Diagram (SD)
+autoactivate on
+autonumber
 
-skinparam backgroundColor #FFFFFF
-skinparam shadowing false
-skinparam sequenceMessageAlign center
-skinparam responseMessageBelowArrow true
-skinparam ParticipantBorderColor #2563EB
-skinparam ParticipantBackgroundColor #EFF6FF
-skinparam ActorBorderColor #334155
-skinparam ArrowColor #475569
-skinparam NoteBackgroundColor #FFF9E6
+actor "Administrator" as User
+participant ":ConsoleApp" as View
+participant "service:RegisterParameter" as Service
+participant "parameter:Parameter" as Parameter
+participant "repository:ParameterRepository" as Repository
 
-actor "Administrator" as Admin
+User -> View: asks to register a Parameter
 
-participant "ConsoleApp" as UI
-participant "RegisterParameter" as Service
-participant "Parameter" as Parameter
-participant "ParameterRepository" as Repository
+View --> User: requests data (ID, name,\ndescription, metric)
 
-== Request Parameter Registration ==
+User -> View: provides the requested data
 
-Admin -> UI : selectRegisterParameter()
-activate UI
+View --> User: requests metric classification\n(Numeric or Qualitative)
 
-UI --> Admin : requestParameterDetails()
+User -> View: selects metric classification
 
-Admin -> UI : enterID(ID)
-Admin -> UI : enterName(name)
-Admin -> UI : enterDescription(description)
-Admin -> UI : enterMetric(metric)
-
-UI --> Admin : requestMetricClassification()
-Admin -> UI : selectMetricType(metricType)
-
-opt Numeric classification (Option 1)
-
-    UI --> Admin : requestMandatoryReferenceValues()
-
-    Admin -> UI : enterReferenceValues(minimum, maximum)
-
+opt Numeric metric
+    View --> User: requests minimum and maximum\nreference values
+    User -> View: provides both reference values
 end
 
-== Register Parameter ==
+View -> Service: execute(ID, name, description,\nmetric, metricType, minimum, maximum)
 
-UI -> Service : execute(ID, name, description,\nmetric, metricType, minimum, maximum)
-activate Service
+Service -> Parameter**: create(ID, name, description,\nmetric, metricType, minimum, maximum)
 
-create Parameter
+Parameter -> Parameter: isValidID(ID)
 
-Service -> Parameter : new Parameter(ID, name, description,\nmetric, metricType, minimum, maximum)
-activate Parameter
-
-Parameter -> Parameter : isValidID(ID)
-
-Parameter -> Parameter : isValidReferenceRange(minimum, maximum)
+Parameter -> Parameter: isValidReferenceRange(minimum, maximum)
 
 note right of Parameter
 Numeric:
-Both reference values
-are mandatory.
+Both reference values are mandatory.
 
 Qualitative:
 No numeric reference values.
 
-Minimum must not
-exceed maximum.
+minimum <= maximum
 end note
 
-alt Invalid parameter data
+Parameter --> Service: parameter
 
-    Parameter --> Service : invalid_argument
+Service -> Repository: existsByID(ID)
 
-    Service --> UI : invalid_argument
+Repository -> Repository: findByID(ID)
 
-    UI --> Admin : displayRegistrationError()
+Repository --> Service: false
 
-else Valid parameter data
+Service -> Repository: add(parameter)
 
-    Parameter --> Service : parameter
-    deactivate Parameter
+Repository -> Repository: existsByID(ID)
 
-    Service -> Repository : existsByID(ID)
-    activate Repository
+Repository -> Repository: add parameter to collection
 
-    Repository --> Service : exists
-    deactivate Repository
+Repository --> Service: true
 
-    alt Parameter ID already exists
+Service --> View: success
 
-        Service --> UI : false
-
-        UI --> Admin : displayDuplicateIDError()
-
-    else Parameter ID is unique
-
-        Service -> Repository : add(parameter)
-        activate Repository
-
-        Repository --> Service : true
-        deactivate Repository
-
-        Service --> UI : true
-
-        UI --> Admin : displaySuccessMessage()
-
-    end
-
-end
-
-deactivate Service
-deactivate UI
-
-note right of Parameter
-AC11-1:
-Parameter ID must contain
-exactly five alphanumeric
-characters and be unique.
-
-AC11-2:
-Reference values apply
-only to numeric metrics.
-
-Professor clarification:
-Numeric parameters require
-both minimum and maximum
-reference values.
-end note
+View --> User: informs operation success
 
 @enduml

@@ -1,86 +1,53 @@
 @startuml
+title US11 - Register a Parameter\nClass Diagram (CD)
 
-title US11 - Register Parameter\nClass Diagram (CD)
-
-skinparam backgroundColor #FFFFFF
-skinparam shadowing false
+hide circle
 skinparam classAttributeIconSize 0
-skinparam classBorderColor #2563EB
-skinparam classBackgroundColor #EFF6FF
-skinparam ArrowColor #475569
+
+class ConsoleApp {
+}
+
+class RegisterParameter {
+    -repository : ParameterRepository&
+    +RegisterParameter(repository)
+    +execute(ID, name, description, metric, metricType, minimum, maximum) : bool
+    +execute(ID, name, description, metric, minimum, maximum) : bool
+}
+
+class ParameterRepository {
+    -parameters
+    +existsByID(ID) : bool
+    +add(parameter) : bool
+    +findByID(ID) : Parameter*
+    +count() : size_t
+}
+
+class Parameter {
+    -ID
+    -name
+    -description
+    -metric
+    -metricType
+    -minimumReferenceValue
+    -maximumReferenceValue
+    +Parameter(ID, name, description, metric, metricType, minimum, maximum)
+    +Parameter(ID, name, description, metric, minimum, maximum)
+    +getID() : wstring
+    +isValidID(ID) : bool
+    +isNumericMetric(metric) : bool
+    +isValidReferenceRange(minimum, maximum) : bool
+}
 
 enum MetricType {
     Numeric
     Qualitative
 }
 
-class Parameter {
-    - ID : wstring
-    - name : wstring
-    - description : wstring
-    - metric : wstring
-    - metricType : MetricType
-    - minimumReferenceValue : optional<double>
-    - maximumReferenceValue : optional<double>
-    --
-    + Parameter(ID, name, description, metric, metricType, minimum, maximum)
-    + Parameter(ID, name, description, metric, minimum, maximum)
-    + getID() : const wstring&
-    + getName() : const wstring&
-    + getDescription() : const wstring&
-    + getMetric() : const wstring&
-    + getMetricType() : MetricType
-    + getMinimumReferenceValue() : optional<double>
-    + getMaximumReferenceValue() : optional<double>
-    + {static} isValidID(ID) : bool
-    + {static} isNumericMetric(metric) : bool
-    + {static} isValidReferenceRange(minimum, maximum) : bool
-}
+ConsoleApp ..> RegisterParameter
+RegisterParameter ..> ParameterRepository
+RegisterParameter ..> Parameter
 
-class ParameterRepository {
-    - parameters : vector<Parameter>
-    --
-    + add(parameter) : bool
-    + findByID(ID) : const Parameter*
-    + existsByID(ID) : bool
-    + count() : size_t
-}
-
-class RegisterParameter {
-    - repository : ParameterRepository&
-    --
-    + RegisterParameter(repository)
-    + execute(ID, name, description, metric, metricType, minimum, maximum) : bool
-    + execute(ID, name, description, metric, minimum, maximum) : bool
-}
-
+ParameterRepository -> "  * " Parameter : records
 Parameter --> MetricType : uses
-ParameterRepository "1" o-- "0..*" Parameter : stores
-RegisterParameter --> ParameterRepository : uses
-RegisterParameter ..> Parameter : creates
-
-note right of Parameter
-AC11-1:
-Parameter ID must contain
-exactly 5 alphanumeric
-characters and be unique.
-
-AC11-2:
-Reference values are only
-applicable to numeric metrics.
-
-Numeric metrics require
-both minimum and maximum
-reference values.
-
-Qualitative metrics must not
-have numeric reference values.
-
-minimum <= maximum
-
-optional<double> represents
-absence for Qualitative and
-legacy C++ compatibility.
-end note
 
 @enduml

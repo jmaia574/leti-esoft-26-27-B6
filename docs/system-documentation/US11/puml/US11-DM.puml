@@ -1,16 +1,15 @@
 @startuml
-title US11 - Register Parameter\nDomain Model (DM)
+title US11 - Relevant Domain Model Excerpt\nDomain Model (DM)
 
-skinparam backgroundColor white
-skinparam classBackgroundColor #EFF6FF
-skinparam classBorderColor #2563EB
-skinparam classArrowColor #2563EB
-skinparam noteBackgroundColor #FFF7ED
-skinparam noteBorderColor #F59E0B
-skinparam shadowing false
-
+left to right direction
 hide methods
 hide circle
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #475569
 
 class Administrator
 
@@ -35,77 +34,9 @@ class TestType {
 
 class TestTypeParameter
 
-' =====================================================
-' Domain relationships
-' =====================================================
-
-Administrator "1" -- "0..*" Parameter : manages
-
-Parameter "1" -- "0..1" ReferenceRange : has
-
-TestType "1" -- "1..*" TestTypeParameter : defines
-
-TestTypeParameter "0..*" -- "1" Parameter : identifies
-
-' =====================================================
-' Acceptance criteria
-' =====================================================
-
-note top of Parameter
-    AC11-1
-
-    Each Parameter has a unique
-    ID containing exactly five
-    alphanumeric characters.
-
-    AC11-2
-
-    Reference values are applicable
-    only to numeric metrics.
-
-    For Numeric, both bounds
-    are mandatory.
-end note
-
-' =====================================================
-' Metric classification
-' =====================================================
-
-note right of Parameter
-    Metric classification:
-
-    Numeric
-    Qualitative
-
-    Represented in the CD
-    by the MetricType enumeration.
-end note
-
-' =====================================================
-' Reference range constraints
-' =====================================================
-
-note right of ReferenceRange
-    Numeric parameter:
-    exactly one reference range,
-    with both bounds mandatory.
-
-    Qualitative parameter:
-    no reference range.
-
-    minimum <= maximum.
-end note
-
-' =====================================================
-' Shared domain concepts
-' =====================================================
-
-note right of TestTypeParameter
-    Associates test types
-    with their parameters.
-
-    This concept already exists
-    in the global Domain Model.
-end note
+Administrator "0..*" -- "0..*" Parameter : manages >
+Parameter "1" -- "0..1" ReferenceRange : has >
+TestType "1" -- "1..*" TestTypeParameter : defines >
+TestTypeParameter "0..*" -- "1" Parameter : identifies >
 
 @enduml
