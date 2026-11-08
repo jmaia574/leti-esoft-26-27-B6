@@ -1,5 +1,5 @@
 @startuml
-' UKLabsMS - Sprint 1 conceptual domain model
+' UKLabsMS - shared conceptual domain model, including Sprint 2 refinements
 ' Multiplicities are explained in analysis.md.
 title UKLabsMS - Domain Model
 
@@ -25,6 +25,18 @@ class ClinicalChemistryTechnologist
 class SpecialistDoctor
 class Courier
 
+class Employee {
+    ID
+    name
+    phoneNumber
+    emailAddress
+    doctorIndexNumber [0..1]
+}
+
+class Role {
+    name
+}
+
 class ClinicalAnalysisLaboratory {
     code
     address
@@ -49,10 +61,11 @@ class TestType {
 }
 
 class Parameter {
-    code
+    ID
     name
     description
     metric
+    metricType
 }
 
 class TestTypeParameter
@@ -88,7 +101,7 @@ RegisteredTest "0..*" -- "1" TestType : is classified as >
 ClinicalAnalysisLaboratory "1" -- "0..*" RegisteredTest : collects samples for >
 
 ' TestTypeParameter is the intermediary for the many-to-many relationship.
-TestType "1" -- "1..*" TestTypeParameter : defines >
+TestType "1" -- "0..*" TestTypeParameter : defines >
 TestTypeParameter "0..*" -- "1" Parameter : identifies >
 ' A registered test records the parameters specified in its lab order.
 RegisteredTest "0..*" -- "1..*" TestTypeParameter : specifies >
@@ -109,7 +122,7 @@ Parameter "1" -- "0..*" ParameterResult : measured by >
 
 RegisteredTest "1" -- "0..1" Report : results in >
 Report "1" -- "1" Diagnosis : contains >
-Report "1" -- "1..*" ParameterResult : presents >
+Report "0..1" -- "1..*" ParameterResult : presents >
 SpecialistDoctor "1" -- "0..*" Report : prepares >
 
 Client "1" -- "0..*" Notification : receives >
@@ -119,5 +132,37 @@ Notification "0..*" -- "1" Report : concerns >
 Administrator "0..*" -- "0..*" TestType : manages >
 Administrator "0..*" -- "0..*" Parameter : manages >
 Administrator "0..*" -- "0..*" ClinicalAnalysisLaboratory : manages >
+Administrator "0..*" -- "0..*" Employee : manages and consults >
+Employee "0..*" -- "1" Role : is assigned to >
+
+note right of Employee
+US12 and US13 share this Employee concept.
+ID is numeric and sequential, starting at 1.
+Phone number and e-mail address are unique.
+Doctor Index Number is mandatory
+when the role is Specialist Doctor.
+end note
+
+note right of Role
+The accepted role catalog and its mapping
+to the named professional participants
+must be confirmed. No extra role values
+or inheritance hierarchy are implied.
+end note
+
+note bottom of Parameter
+Reference values apply only to Numeric metrics.
+US11 team rule: Numeric requires a minimum
+and maximum, with minimum <= maximum;
+Qualitative has no numeric reference range.
+end note
+
+note bottom of TestTypeParameter
+A Test Type can be registered before its
+parameter associations are configured.
+Use in a Registered Test requires associations
+covering the prescribed parameters.
+The configuration operation is not implemented.
+end note
 
 @enduml

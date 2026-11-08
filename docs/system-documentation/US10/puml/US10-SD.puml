@@ -1,35 +1,51 @@
 @startuml
-title US10 - Register a Test Type\nSequence Diagram (SD)
+title US10 - Register a Test Type\nSequence Diagram (SD) - Default Successful Flow
 
-autoactivate on
 autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign center
 
 actor "Administrator" as User
-participant ":RegisterTestTypeView" as View
-participant ":RegisterTestTypeController" as Ctrl
-participant App
+participant "view:RegisterTestTypeView" as View
+participant "controller:RegisterTestTypeController" as Ctrl
+participant "App (static access)" as App
 participant "app:App" as AppInstance
 participant "container:TestTypeContainer" as Container
-participant "testType:TestType" as TestType
 
-User -> View: asks to register a Test Type
-View --> User: requests data (Internal Code, NHS Code,\ncollection-method description)
-User -> View: provides the requested data
-View -> Ctrl: registerTestType(internalCode,\nnhsCode, collectionMethodDescription)
-Ctrl -> App: getInstance()
-App --> Ctrl: app
-Ctrl -> AppInstance: getTestTypeContainer()
-AppInstance --> Ctrl: container
-
-Ctrl -> Container: create(internalCode, nhsCode,\ncollectionMethodDescription)
-Container --> TestType**: create(internalCode, nhsCode,\ncollectionMethodDescription)
-TestType --> Container: testType
-Container --> Ctrl: testType
-Ctrl -> Container: save(testType)
-Container -> Container: check code uniqueness
-Container -> Container: add(testType)
-Container --> Ctrl: success
-Ctrl --> View: success
-View --> User: informs operation success
+User -> View : requests Test Type registration
+activate View
+View --> User : requests Internal Code, NHS Code,\nand collection-method description
+User -> View : provides the requested data
+View -> Ctrl : registerTestType(internalCode, nhsCode,\ncollectionMethodDescription)
+activate Ctrl
+Ctrl -> App : getInstance()
+App --> Ctrl : app
+Ctrl -> AppInstance : getTestTypeContainer()
+AppInstance --> Ctrl : container
+Ctrl -> Container : create(internalCode, nhsCode,\ncollectionMethodDescription)
+activate Container
+create participant "testType:TestType" as TestType
+Container -> TestType : TestType(internalCode, nhsCode,\ncollectionMethodDescription)
+activate TestType
+TestType -> TestType : isValidInternalCode(internalCode)
+TestType -> TestType : isValidNhsCode(nhsCode)
+TestType --> Container : constructed TestType
+deactivate TestType
+Container --> Ctrl : testType
+deactivate Container
+Ctrl -> Container : save(testType)
+activate Container
+Container -> Container : existsByInternalCode(internalCode)
+Container -> Container : existsByNhsCode(nhsCode)\n(case-insensitive)
+note right of Container
+Both identities are unused in this success flow.
+end note
+Container -> Container : append testType to testTypes
+Container --> Ctrl : true
+deactivate Container
+Ctrl --> View : true
+deactivate Ctrl
+View --> User : confirms registration success
+deactivate View
 
 @enduml

@@ -31,16 +31,5 @@ end
 
 System --> Admin : Confirms employee registration and displays the assigned ID
 
-note right of System
-AC12-1: Exactly one role per employee.
-AC12-2: Automatically generated
-sequential numeric ID, starting at 1.
-AC12-3: Name, phone number,
-and e-mail address are mandatory.
-AC12-4: Phone number and e-mail
-address are each unique.
-AC12-5: Specialist Doctors require
-a Doctor Index Number.
-end note
 
 @enduml

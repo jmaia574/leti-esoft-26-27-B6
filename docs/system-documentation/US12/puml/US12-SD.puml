@@ -16,6 +16,7 @@ participant "ConsoleApp" as UI
 participant "RegisterEmployee" as Service
 participant "EmployeeRepository" as Repository
 
+
 Admin -> UI : Requests employee registration
 activate UI
 
@@ -33,12 +34,6 @@ end
 UI -> Service : execute(name, phoneNumber, emailAddress,\nrole, doctorIndexNumber)
 activate Service
 
-note right of Service
-Validates mandatory information,
-the selected role and, when required,
-the Doctor Index Number.
-end note
-
 Service -> Repository : existsByPhoneNumber(phoneNumber)
 activate Repository
 Repository --> Service : false
@@ -49,7 +44,7 @@ activate Repository
 Repository --> Service : false
 deactivate Repository
 
-Service -> Repository : getNextId()
+Service -> Repository : getNextID()
 activate Repository
 Repository --> Service : ID
 deactivate Repository
@@ -61,14 +56,15 @@ Service -> Repository : add(employee)
 activate Repository
 
 note right of Repository
-Stores the employee and
-increments nextId.
+Checks ID and contact uniqueness,
+stores the employee, and increments nextID
+only after successful insertion.
 end note
 
 Repository --> Service : true
 deactivate Repository
 
-Service --> UI : ID
+Service --> UI : optional<int> containing ID
 deactivate Service
 
 UI --> Admin : Confirms employee registration\nand displays the assigned ID

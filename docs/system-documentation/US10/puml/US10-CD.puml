@@ -5,37 +5,59 @@ hide circle
 skinparam classAttributeIconSize 0
 
 class RegisterTestTypeView {
+    -controller : RegisterTestTypeController&
+    +RegisterTestTypeView(controller)
+    +show(input : wistream&, output : wostream&) : void
 }
 
 class RegisterTestTypeController {
-    +registerTestType(internalCode, nhsCode, collectionMethodDescription)
+    -container : TestTypeContainer* = nullptr
+    +RegisterTestTypeController()
+    +RegisterTestTypeController(container)
+    +registerTestType(internalCode, nhsCode, collectionMethodDescription) : bool
 }
 
 class App {
     - App()
-    +{static} getInstance() : App
-    +getTestTypeContainer() : TestTypeContainer
+    -testTypeContainer : TestTypeContainer
+    +{static} getInstance() : App&
+    +getTestTypeContainer() : TestTypeContainer&
 }
 
 class TestTypeContainer {
+    -testTypes : vector<TestType>
     +create(internalCode, nhsCode, collectionMethodDescription) : TestType
     +save(testType) : bool
+    +existsByInternalCode(internalCode) : bool
+    +existsByNhsCode(nhsCode) : bool
+    +findByInternalCode(internalCode) : const TestType*
+    +count() : size_t
 }
 
 class TestType {
-    -internalCode
-    -nhsCode
-    -collectionMethodDescription
-    TestType(internalCode, nhsCode, collectionMethodDescription)
+    -internalCode : wstring
+    -nhsCode : wstring
+    -collectionMethodDescription : wstring
+    +TestType(internalCode, nhsCode, collectionMethodDescription)
+    +getInternalCode() : const wstring&
+    +getNhsCode() : const wstring&
+    +getCollectionMethodDescription() : const wstring&
+    +{static} isValidInternalCode(internalCode) : bool
+    +{static} isValidNhsCode(nhsCode) : bool
 }
 
 RegisterTestTypeView ..> RegisterTestTypeController
 RegisterTestTypeController ..> App
-RegisterTestTypeController .> TestTypeContainer
-RegisterTestTypeController .> TestType
+RegisterTestTypeController ..> TestTypeContainer
+RegisterTestTypeController ..> TestType
 
-App -> "1" App : instance
-App --> "1" TestTypeContainer : maintains
-TestTypeContainer -> "  * " TestType : records
+App "1" *-- "1" TestTypeContainer : maintains
+TestTypeContainer "1" o-- "0..*" TestType : records
+
+note bottom of TestTypeContainer
+Both code identities are unique.
+NHS Code comparison ignores letter case.
+No TestTypeParameter associations are stored yet.
+end note
 
 @enduml

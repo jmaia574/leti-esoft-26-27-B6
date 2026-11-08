@@ -36,7 +36,21 @@ class TestTypeParameter
 
 Administrator "0..*" -- "0..*" Parameter : manages >
 Parameter "1" -- "0..1" ReferenceRange : has >
-TestType "1" -- "1..*" TestTypeParameter : defines >
+TestType "1" -- "0..*" TestTypeParameter : defines >
 TestTypeParameter "0..*" -- "1" Parameter : identifies >
+
+note bottom of ReferenceRange
+Numeric: one complete range is required
+under team proposal AC11-8.
+Qualitative: no numeric range.
+minimum <= maximum; finite bounds.
+end note
+
+note bottom of TestTypeParameter
+Proposed configuration follows catalog registration.
+A definition used in a registered test must identify
+at least one Parameter (derived use constraint).
+Association management is not implemented.
+end note
 
 @enduml

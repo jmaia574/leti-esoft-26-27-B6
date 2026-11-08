@@ -28,22 +28,4 @@ Admin -> System : Provides the selected role
 System --> Admin : Displays employees matching the\n selected role and their total count
 
 
-' =====================================================
-' Additional Information
-' =====================================================
-
-note right of System
-US13 - List Employees by Role
-
-The Administrator selects a role.
-
-The system returns all employees
-matching the selected role.
-
-The operation is read-only.
-
-Exact role matching is currently
-case-sensitive.
-end note
-
 @enduml

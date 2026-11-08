@@ -37,88 +37,10 @@ class Role {
 ' Domain relationships
 ' =====================================================
 
-Administrator "0..*" -- "0..*" Employee : consults >
+Administrator "1*" -- "0..*" Employee : consults >
 
 Employee "0..*" -- "1" Role : is assigned to >
 
-' =====================================================
-' Business rules and constraints
-' =====================================================
 
-note right of Employee
-Each employee is identified
-by an ID and has a name.
-
-Employees can be consulted
-according to their assigned role.
-
-A consultation does not modify
-employee information.
-end note
-
-note right of Role
-Represents an employee's
-assigned professional role.
-
-Several employees may
-share the same role.
-
-Each employee has one
-assigned role in the
-current US13 model.
-end note
-
-note bottom of Administrator
-US13 - List Employees by Role
-
-The Administrator selects a role
-to consult matching employees.
-
-The consultation returns all
-employees assigned to that role.
-
-If no employees match,
-an empty result is returned.
-end note
-
-note bottom of Role
-Examples of roles identified
-in the global Domain Model:
-
-Receptionist
-MedicalLabTechnician
-ClinicalChemistryTechnologist
-SpecialistDoctor
-Courier
-
-The accepted role values
-must be confirmed with
-the project requirements.
-end note
-
-' =====================================================
-' Alignment with existing diagrams
-' =====================================================
-
-legend bottom
-    US13 - Domain Model
-
-    Employee:
-    Business concept represented by
-    the Employee class in the CD.
-
-    Role:
-    Conceptual representation of the
-    role attribute stored in Employee.
-
-    Administrator:
-    Primary actor represented in
-    the SSD and SD.
-
-    Technical components such as
-    EmployeeRepository and
-    ListEmployeesByRole are
-    intentionally excluded.
-endlegend
 
 @enduml

@@ -15,27 +15,33 @@ class RegisterParameter {
 }
 
 class ParameterRepository {
-    -parameters
+    -parameters : vector<Parameter>
     +existsByID(ID) : bool
     +add(parameter) : bool
-    +findByID(ID) : Parameter*
+    +findByID(ID) : const Parameter*
     +count() : size_t
 }
 
 class Parameter {
-    -ID
-    -name
-    -description
-    -metric
-    -metricType
-    -minimumReferenceValue
-    -maximumReferenceValue
+    -ID : wstring
+    -name : wstring
+    -description : wstring
+    -metric : wstring
+    -metricType : MetricType
+    -minimumReferenceValue : optional<double>
+    -maximumReferenceValue : optional<double>
     +Parameter(ID, name, description, metric, metricType, minimum, maximum)
     +Parameter(ID, name, description, metric, minimum, maximum)
-    +getID() : wstring
-    +isValidID(ID) : bool
-    +isNumericMetric(metric) : bool
-    +isValidReferenceRange(minimum, maximum) : bool
+    +getID() : const wstring&
+    +getName() : const wstring&
+    +getDescription() : const wstring&
+    +getMetric() : const wstring&
+    +getMetricType() : MetricType
+    +getMinimumReferenceValue() : optional<double>
+    +getMaximumReferenceValue() : optional<double>
+    +{static} isValidID(ID) : bool
+    +{static} isNumericMetric(metric) : bool
+    +{static} isValidReferenceRange(minimum, maximum) : bool
 }
 
 enum MetricType {
@@ -47,7 +53,19 @@ ConsoleApp ..> RegisterParameter
 RegisterParameter ..> ParameterRepository
 RegisterParameter ..> Parameter
 
-ParameterRepository -> "  * " Parameter : records
+ParameterRepository "1" o-- "0..*" Parameter : records
 Parameter --> MetricType : uses
+
+note bottom of RegisterParameter
+The explicit MetricType overload is used by ConsoleApp.
+The other overload preserves legacy compatibility.
+minimum/maximum abbreviate the optional reference bounds.
+end note
+
+note bottom of ParameterRepository
+Current ID comparison is exact and case-sensitive.
+The referenced forum clarification requires reconciliation.
+No TestTypeParameter associations are stored yet.
+end note
 
 @enduml

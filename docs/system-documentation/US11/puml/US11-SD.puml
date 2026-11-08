@@ -1,13 +1,13 @@
 @startuml
 title US11 - Register a Parameter\nSequence Diagram (SD)
 
-autoactivate on
 autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign center
 
 actor "Administrator" as User
 participant ":ConsoleApp" as View
 participant "service:RegisterParameter" as Service
-participant "parameter:Parameter" as Parameter
 participant "repository:ParameterRepository" as Repository
 
 User -> View: asks to register a Parameter
@@ -27,9 +27,12 @@ end
 
 View -> Service: execute(ID, name, description,\nmetric, metricType, minimum, maximum)
 
-Service -> Parameter**: create(ID, name, description,\nmetric, metricType, minimum, maximum)
+create participant "parameter:Parameter" as Parameter
+Service -> Parameter : Parameter(ID, name, description,\nmetric, metricType, minimum, maximum)
 
 Parameter -> Parameter: isValidID(ID)
+
+Parameter -> Parameter: check mandatory name, description, metric
 
 Parameter -> Parameter: isValidReferenceRange(minimum, maximum)
 
@@ -41,6 +44,7 @@ Qualitative:
 No numeric reference values.
 
 minimum <= maximum
+Reference bounds must be finite.
 end note
 
 Parameter --> Service: parameter
@@ -55,12 +59,18 @@ Service -> Repository: add(parameter)
 
 Repository -> Repository: existsByID(ID)
 
-Repository -> Repository: add parameter to collection
+Repository -> Repository: append parameter to parameters
 
 Repository --> Service: true
 
 Service --> View: success
 
 View --> User: informs operation success
+
+note over Service, Repository
+Current ID lookup is case-sensitive.
+The US11 clarification referenced in US10
+must be recovered and reconciled with this behavior.
+end note
 
 @enduml

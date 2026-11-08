@@ -22,14 +22,22 @@ class TestType {
 class TestTypeParameter
 
 class Parameter {
-    code
+    ID
     name
     description
     metric
 }
 
 Administrator "0..*" -- "0..*" TestType : manages >
-TestType "1" -- "1..*" TestTypeParameter : defines >
+TestType "1" -- "0..*" TestTypeParameter : defines >
 TestTypeParameter "0..*" -- "1" Parameter : identifies >
+
+note bottom of TestTypeParameter
+Catalog entries may exist before associations
+are configured. A definition used in a registered
+test must identify at least one Parameter
+(derived use constraint).
+Association management is not implemented.
+end note
 
 @enduml

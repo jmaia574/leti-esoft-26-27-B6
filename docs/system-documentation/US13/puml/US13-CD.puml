@@ -7,25 +7,43 @@ skinparam classAttributeIconSize 0
 skinparam classBorderColor #2563EB
 skinparam classBackgroundColor #EFF6FF
 skinparam ArrowColor #475569
+skinparam NoteBackgroundColor #FFF9E6
 
 class Employee {
-    - ID : wstring
+    - ID : int
     - name : wstring
+    - phoneNumber : wstring
+    - emailAddress : wstring
     - role : wstring
+    - doctorIndexNumber : optional<wstring>
     --
-    + Employee(ID, name, role)
-    + getID() : const wstring&
+    + Employee(ID, name, phoneNumber, emailAddress, role, doctorIndexNumber)
+    + getID() : int
     + getName() : const wstring&
+    + getPhoneNumber() : const wstring&
+    + getEmailAddress() : const wstring&
     + getRole() : const wstring&
+    + getDoctorIndexNumber() : const optional<wstring>&
 }
 
 class EmployeeRepository {
     - employees : vector<Employee>
+    - nextID : int = 1
     --
     + add(employee) : bool
-    + findByRole(role) : vector<Employee>
+    + getNextID() : int
     + existsByID(ID) : bool
+    + existsByPhoneNumber(phoneNumber) : bool
+    + existsByEmailAddress(emailAddress) : bool
+    + findByRole(role) : vector<Employee>
     + count() : size_t
+}
+
+class RegisterEmployee {
+    - repository : EmployeeRepository&
+    --
+    + RegisterEmployee(repository)
+    + execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : optional<int>
 }
 
 class ListEmployeesByRole {
@@ -36,23 +54,10 @@ class ListEmployeesByRole {
 }
 
 EmployeeRepository "1" o-- "0..*" Employee : stores
-
+RegisterEmployee --> EmployeeRepository : uses
+RegisterEmployee ..> Employee : creates
 ListEmployeesByRole --> EmployeeRepository : queries
 
-note right of ListEmployeesByRole
-US13 - List Employees by Role
 
-Returns employees matching
-the selected role.
-
-The operation is read-only.
-end note
-
-note bottom of EmployeeRepository
-Currently uses in-memory storage.
-
-Role comparison is exact
-and case-sensitive.
-end note
 
 @enduml

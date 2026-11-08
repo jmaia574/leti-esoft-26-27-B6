@@ -17,7 +17,8 @@ class Employee {
     - role : wstring
     - doctorIndexNumber : optional<wstring>
     --
-+ execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : optional<int>    + getID() : int
+    + Employee(ID, name, phoneNumber, emailAddress, role, doctorIndexNumber)
+    + getID() : int
     + getName() : const wstring&
     + getPhoneNumber() : const wstring&
     + getEmailAddress() : const wstring&
@@ -42,22 +43,21 @@ class RegisterEmployee {
     - repository : EmployeeRepository&
     --
     + RegisterEmployee(repository)
-    + execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : bool
+    + execute(name, phoneNumber, emailAddress, role, doctorIndexNumber) : optional<int>
+}
+
+class ListEmployeesByRole {
+    - repository : const EmployeeRepository&
+    --
+    + ListEmployeesByRole(repository)
+    + execute(role) : vector<Employee>
 }
 
 EmployeeRepository "1" o-- "0..*" Employee : stores
 RegisterEmployee --> EmployeeRepository : uses
 RegisterEmployee ..> Employee : creates
+ListEmployeesByRole --> EmployeeRepository : queries
 
-note bottom of Employee
-Doctor Index Number is mandatory
-when role is Specialist Doctor.
-end note
 
-note bottom of EmployeeRepository
-add checks ID and contact uniqueness.
-After a successful insertion,
-nextID is incremented.
-end note
 
 @enduml

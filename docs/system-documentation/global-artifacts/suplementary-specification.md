@@ -3,7 +3,7 @@
 **Project:** UK Labs Management System (UKLabsMS)  
 **Course:** LETI-ESOFT 2026/2027  
 **Team:** B6  
-**Sprint:** 1
+**Scope:** Sprint 1 business requirements with Sprint 2 integration notes
 
 ## 1. Introduction
 
@@ -18,6 +18,8 @@ Requirements are classified according to their origin:
 - **Proposed:** Additional recommendations requiring stakeholder validation.
 
 The term "shall" denotes a mandatory requirement, while "should" indicates a recommended enhancement.
+
+The origin labels are retained from the supplied project documentation. The complete assignment and forum records are not included in this package, so this review does not independently reclassify them as newly verified stakeholder requirements. These are target requirements, not a report that the current in-memory prototype satisfies them.
 
 ## 2. Functionality
 
@@ -39,7 +41,7 @@ This section specifies functionality shared across multiple use cases, covering 
 Clinical records are strictly confidential and must be protected against unauthorized disclosure or tampering.
 
 The system distinguishes authentication from authorization:
-- **Authentication:** Verifies the user's identity (simulated during the prototype stage).
+- **Authentication:** Verifies the user's identity (may be simulated during the prototype stage).
 - **Authorization:** Restricts system operations according to the user's role.
 
 ### 2.2 Functional Traceability
@@ -50,6 +52,18 @@ The system distinguishes authentication from authorization:
 - **FUN-04** maps to **UC12 (View Test Results and Report)**.
 - **FUN-05** spans across the clinical workflow use cases: **UC06 (Register Client)**, **UC07 (Register Prescribed Test)**, **UC08 (Register Sample)**, **UC10 (Record Chemical Analysis Results)**, and **UC11 (Prepare Diagnostic Report)**.
 - **FUN-06 to FUN-08** represent cross-cutting architectural constraints applicable to all operational use cases (**UC02 to UC12**).
+
+`UC01`-`UC12` are the team's business-use-case identifiers. They are distinct from Sprint 2 `US10`-`US13`; see the [use-case mapping](use-case-diagram.md).
+
+### 2.3 Sprint 2 Integration
+
+| Stories | Shared requirement context | Design and implementation boundary |
+|:---|:---|:---|
+| US10 and US11 | Consistent Test Type and Parameter identities in the catalog and clinical workflow (FUN-05) | TestTypeParameter is the common conceptual association. Establishing it is a separate configuration responsibility not implemented by the registration flows. |
+| US12 and US13 | Consistent Employee identity and assigned role between registration and consultation | The proposed integration uses the same EmployeeRepository instance. US13's read-only behavior and the complete workflow are team proposals; US12 registration is not implemented. |
+| US10-US13 | Authentication (FUN-01), English terminology (SUP-03), and consistent console feedback (USA-02/04) | The menu currently contains US10, US11, and US13. Authentication is not implemented, and the current employee API fails syntax checking. |
+
+These integration notes do not add official acceptance criteria. [The system integration overview](../README.md) records the common design contract and remaining implementation work.
 
 ## 3. Usability
 
@@ -87,6 +101,8 @@ The system must guarantee the consistency and persistence of information associa
 
 Transactional boundaries must prevent partial updates, specifically during sample registration, results recording, and report validation.
 
+The current prototype retains catalog and employee data in memory. It does not implement persistence or demonstrate compliance with REL-01 or the recovery requirements; these remain system targets.
+
 ### 4.2 Availability Verification
 
 Annual availability exceeding 99% must be supported through resilient software architecture, fault-tolerant persistence, and rapid restart capabilities.
@@ -119,6 +135,8 @@ The software product must be designed for long-term maintainability, adaptabilit
 | SUP-04 | Automated regression testing shall be adopted across all core components, implemented using the Google Testing Framework (GoogleTest). | Specified recommendation |
 | SUP-05 | The architecture should enforce separation of concerns, decoupling domain business logic from UI, persistence, and external APIs. | Proposed |
 | SUP-06 | The domain model and service components should be highly cohesive and loosely coupled. | Proposed |
+
+In the shared Domain Model, a ReferenceRange is applicable only to Numeric Parameters. US11 additionally records the rule requiring both minimum and maximum with minimum not exceeding maximum; Qualitative Parameters have no numeric reference values. This detail remains classified as the additional US11 rule, rather than being promoted to another official acceptance criterion here.
 
 ## 7. Additional Constraints (+)
 
@@ -180,6 +198,7 @@ The Project Assignment does not specify mandatory physical server dimensions or 
 
 - LETI-ESOFT 2026/2027 — Project Assignment.
 - LETI-ESOFT 2026/2027 — Project Sprint 1.
-- UKLabsMS — Use Case Diagram (`use-case-diagram.md`).
-- UKLabsMS — OO Analysis & Domain Model (`analysis.md`).
-- UKLabsMS — Project Glossary (`glossary.md`).
+- [UKLabsMS - Use Case Diagram](use-case-diagram.md).
+- [UKLabsMS - OO Analysis and Domain Model](analysis.md).
+- [UKLabsMS - Project Glossary](glossary.md).
+- [US10-US13 Integration Overview](../README.md).

@@ -29,7 +29,7 @@ Admin -> UI : enterRole(role)
 alt Empty role
     UI --> Admin : displayInvalidRoleError()
 
-else Valid role
+else Non-empty role
 
     == Retrieve Employees ==
 
@@ -43,18 +43,18 @@ else Valid role
         Repository -> Repository : compare employee.getRole() with role
     end
 
-    Repository --> Service : vector<Employee>
+    Repository --> Service : employees : vector<Employee>
     deactivate Repository
 
-    Service --> UI : vector<Employee>
+    Service --> UI : employees : vector<Employee>
     deactivate Service
 
     alt Employees found
         loop For each matching employee
-            UI --> Admin : displayEmployee(ID, name, role)
+            UI --> Admin : displayEmployee(employee.getID(),\n employee.getName(), employee.getRole())
         end
 
-        UI --> Admin : displayTotalEmployees(count)
+        UI --> Admin : displayTotalEmployees(employees.size())
 
     else No employees found
         UI --> Admin : displayNoEmployeesFound()
@@ -63,20 +63,5 @@ end
 
 deactivate UI
 
-note right of Service
-US13 - List Employees by Role
-
-The consultation is read-only.
-
-The service does not modify
-registered employee records.
-end note
-
-note right of Repository
-Employees are stored in memory.
-
-Role matching currently uses
-exact, case-sensitive comparison.
-end note
 
 @enduml

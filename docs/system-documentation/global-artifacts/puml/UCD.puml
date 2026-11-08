@@ -1,5 +1,5 @@
 @startuml
-title UKLabsMS - Use Case Diagram
+title UKLabsMS - Business Use Cases (UC identifiers)\nSprint 2 story mapping shown in notes
 
 left to right direction
 
@@ -52,6 +52,22 @@ Staff <|-- CCT
 Staff <|-- Doctor
 
 'NOTES
+note left of UC_Employees
+  Sprint 2 refinements:
+  US12 - Register an Employee
+  US13 - List Employees by Role
+end note
+
+note left of UC_TestTypes
+  Sprint 2 refinement:
+  US10 - Register a Test Type
+end note
+
+note left of UC_Parameters
+  Sprint 2 refinement:
+  US11 - Register a Parameter
+end note
+
 note right of UC_WriteDiagnosis
   After the specialist doctor completes
   the diagnosis report, the system
